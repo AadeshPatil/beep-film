@@ -18,7 +18,7 @@ const StyledHeaderWrapper = styled("header")<{ isOpen?: boolean }>(({ isOpen }) 
   backgroundColor: "rgba(0, 0, 0, 0.5)",
   padding: "3rem 3rem",
   height: isOpen ? "100vh" : "auto",
-  transition: "height 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+  transition: "height 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s ease",
   overflow: "hidden",
 }));
 
@@ -53,7 +53,7 @@ const StyledMenuContent = styled(Box)<{ isOpen?: boolean }>(({ isOpen }) => ({
   gap: "4rem",
   marginTop: "3rem",
   opacity: isOpen ? 1 : 0,
-  transition: "opacity 0.3s ease-in-out 0.2s",
+  transition: "opacity 0.6s ease-in-out 0.4s",
 }));
 
 const StyledMenuRight = styled(Box)({
@@ -113,7 +113,7 @@ export default function Header() {
             <StyledMenuLink href="/" onClick={toggleMenu}>
               HOME
             </StyledMenuLink>
-            <StyledMenuLink href="/directors" onClick={toggleMenu}>
+            <StyledMenuLink href="/work" onClick={toggleMenu}>
               WORK
             </StyledMenuLink>
             <StyledMenuLink href="/about" onClick={toggleMenu}>

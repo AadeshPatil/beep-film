@@ -1,77 +1,78 @@
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 export const StyledContactSection = styled(Box)({
+  backgroundColor: "#000",
   minHeight: "100vh",
-  paddingTop: "6rem",
-  paddingBottom: "4rem",
-  backgroundColor: "#fff",
+  padding: "6rem 3rem 4rem",
+  marginTop: "80px",
+});
+
+export const StyledContactContent = styled(Box)({
+  maxWidth: "1200px",
+  margin: "0 auto",
 });
 
 export const StyledPageTitle = styled(Typography)(({ theme }) => ({
-  fontSize: "3rem",
+  fontSize: "2rem",
   fontWeight: 700,
-  textAlign: "center",
+  color: "#fff",
+  textTransform: "uppercase",
   marginBottom: "3rem",
-  letterSpacing: "-0.02em",
-  [theme.breakpoints.up("md")]: {
-    fontSize: "4rem",
+  fontFamily: "var(--font-koulen), sans-serif",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "1.5rem",
   },
 }));
 
-export const StyledContactGrid = styled(Box)(({ theme }) => ({
-  display: "grid",
-  gridTemplateColumns: "1fr",
-  gap: "3rem",
-  marginTop: "3rem",
-  [theme.breakpoints.up("md")]: {
-    gridTemplateColumns: "1fr 1fr",
-    gap: "4rem",
-  },
-}));
-
-export const StyledContactInfo = styled(Box)({
-  "& > *": {
-    marginBottom: "2rem",
-  },
-});
-
-export const StyledInfoTitle = styled(Typography)({
-  fontSize: "1.5rem",
-  fontWeight: 700,
-  marginBottom: "1rem",
-});
-
-export const StyledInfoText = styled(Typography)({
+export const StyledSectionLabel = styled(Typography)(({ theme }) => ({
   fontSize: "1rem",
-  color: "#6b7280",
+  fontWeight: 400,
+  color: "#00FFFF",
+  textTransform: "capitalize",
+  fontFamily: "var(--font-koulen), sans-serif",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "0.875rem",
+  },
+}));
+
+export const StyledContactItem = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  gap: "1rem",
+  marginBottom: "1.5rem",
+});
+
+export const StyledContactIcon = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  minWidth: "40px",
+});
+
+export const StyledContactText = styled(Typography)({
+  fontSize: "1.125rem",
+  fontWeight: 400,
+  color: "#fff",
   lineHeight: 1.6,
 });
 
 export const StyledContactLink = styled("a")({
-  color: "#000",
+  color: "#fff",
   textDecoration: "none",
   transition: "color 0.3s",
   "&:hover": {
-    color: "#374151",
+    color: "#00FFFF",
   },
 });
 
-export const StyledContactForm = styled("form")({
-  display: "flex",
-  flexDirection: "column",
-  gap: "1.5rem",
-});
-
-export const StyledSubmitButton = styled(Button)({
-  padding: "1rem",
-  backgroundColor: "#000",
+export const StyledAddressText = styled(Typography)(({ theme }) => ({
+  fontSize: "1.125rem",
+  fontWeight: 400,
   color: "#fff",
-  fontSize: "0.875rem",
-  fontWeight: 500,
-  letterSpacing: "0.1em",
-  transition: "background-color 0.3s",
-  "&:hover": {
-    backgroundColor: "#374151",
+  lineHeight: 1.8,
+  marginTop: "1rem",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "1rem",
   },
-});
+}));

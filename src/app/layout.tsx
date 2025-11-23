@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Koulen } from "next/font/google";
 import MuiThemeProvider from "@/common/styles/mui-theme-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const koulen = Koulen({ 
+  weight: "400",
+  subsets: ["latin"], 
+  variable: "--font-koulen" 
+});
 
 export const metadata: Metadata = {
   title: "Video Portfolio - Brand x Love",
@@ -16,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.variable}>
+      <body className={`${inter.variable} ${koulen.variable}`}>
         <MuiThemeProvider>{children}</MuiThemeProvider>
       </body>
     </html>

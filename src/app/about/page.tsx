@@ -6,7 +6,6 @@ export default function AboutPage() {
     <>
       <Header />
       <AboutContent />
-      <Footer />
     </>
   );
 }
