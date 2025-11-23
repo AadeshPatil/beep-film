@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { styled } from "@mui/material/styles";
 import { Box, IconButton, Drawer } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -72,12 +73,13 @@ const StyledMenuList = styled(Box)({
   justifyContent: "flex-start",
 });
 
-const StyledMenuLink = styled(Link)({
+const StyledMenuLink = styled(Box)({
   fontSize: "2rem",
   fontWeight: 700,
   color: "#fff",
   textDecoration: "none",
   transition: "opacity 0.3s",
+  cursor: "pointer",
   "&:hover": {
     opacity: 0.7,
   },
@@ -85,8 +87,14 @@ const StyledMenuLink = styled(Link)({
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  const handleNavigation = (path: string) => {
+    router.push(path);
+    setIsMenuOpen(false);
+  };
 
   return (
     <StyledHeaderWrapper isOpen={isMenuOpen}>
@@ -110,16 +118,16 @@ export default function Header() {
       <StyledMenuContent isOpen={isMenuOpen}>
         <StyledMenuRight>
           <StyledMenuList>
-            <StyledMenuLink href="/" onClick={toggleMenu}>
+            <StyledMenuLink onClick={() => handleNavigation("/")}>
               HOME
             </StyledMenuLink>
-            <StyledMenuLink href="/work" onClick={toggleMenu}>
+            <StyledMenuLink onClick={() => handleNavigation("/work")}>
               WORK
             </StyledMenuLink>
-            <StyledMenuLink href="/about" onClick={toggleMenu}>
+            <StyledMenuLink onClick={() => handleNavigation("/about")}>
               ABOUT US
             </StyledMenuLink>
-            <StyledMenuLink href="/contact" onClick={toggleMenu}>
+            <StyledMenuLink onClick={() => handleNavigation("/contact")}>
               CONTACT US
             </StyledMenuLink>
           </StyledMenuList>
