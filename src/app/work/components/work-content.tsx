@@ -13,7 +13,7 @@ const StyledWorkSection = styled(Box)({
 });
 
 const StyledWorkTitle = styled(Typography)(({ theme }) => ({
-  fontSize: "3.5rem",
+  fontSize: "2.5rem",
   fontWeight: 700,
   color: "#fff",
   textTransform: "uppercase",

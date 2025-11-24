@@ -12,7 +12,7 @@ import Logo4 from "@/assets/img/company-logos/image copy 3.png";
 import Logo5 from "@/assets/img/company-logos/image copy 4.png";
 import Logo6 from "@/assets/img/company-logos/image copy 5.png";
 import Logo7 from "@/assets/img/company-logos/yale.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
@@ -332,13 +332,18 @@ const brandLogos = [
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handlePrevious = () => {
-    setCurrentIndex((prev) => Math.max(0, prev - 1));
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        if (prev >= recentVideos.length - 1) {
+          return 0;
+        }
+        return prev + 1;
+      });
+    }, 5000);
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => Math.min(recentVideos.length - 1, prev + 1));
-  };
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -360,13 +365,6 @@ export default function Hero() {
       {/* Recents Section */}
       <StyledRecentsSection>
         <StyledCarouselContainer>
-          <StyledNavButton
-            onClick={handlePrevious}
-            disabled={currentIndex === 0}
-            aria-label="Previous slide"
-          >
-            <ArrowBackIosNewIcon />
-          </StyledNavButton>
 
           <StyledCarouselWrapper>
             <StyledRecentsTitle>RECENTS</StyledRecentsTitle>
@@ -401,26 +399,19 @@ export default function Hero() {
                 </StyledVideoCard>
               ))}
             </StyledCarouselTrack>
-              {/* Brand Collaborations Section */}
+            {/* Brand Collaborations Section */}
 
-          <StyledBrandsTitle>BRAND COLLABORATIONS</StyledBrandsTitle>
-          <StyledBrandsScroller>
-            <StyledBrandsTrack>
-              {[...brandLogos, ...brandLogos].map((brand, index) => (
-                <StyledBrandLogo key={`${brand.id}-${index}`}>
-                  <img src={brand.src} alt={brand.name} />
-                </StyledBrandLogo>
-              ))}
-            </StyledBrandsTrack>
-          </StyledBrandsScroller>
+            <StyledBrandsTitle>BRAND COLLABORATIONS</StyledBrandsTitle>
+            <StyledBrandsScroller>
+              <StyledBrandsTrack>
+                {[...brandLogos, ...brandLogos].map((brand, index) => (
+                  <StyledBrandLogo key={`${brand.id}-${index}`}>
+                    <img src={brand.src} alt={brand.name} />
+                  </StyledBrandLogo>
+                ))}
+              </StyledBrandsTrack>
+            </StyledBrandsScroller>
           </StyledCarouselWrapper>
-          <StyledNavButton
-            onClick={handleNext}
-            disabled={currentIndex >= recentVideos.length - 1}
-            aria-label="Next slide"
-          >
-            <ArrowForwardIosIcon />
-          </StyledNavButton>
         </StyledCarouselContainer>
       </StyledRecentsSection>
     </>

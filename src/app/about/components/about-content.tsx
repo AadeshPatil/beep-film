@@ -11,7 +11,9 @@ import MovieIcon from "@mui/icons-material/Movie";
 import GroupIcon from "@mui/icons-material/Group";
 import DevendraImg from "@/assets/img/team/devendra.png";
 import AmeyImg from "@/assets/img/team/amey.png";
+import AmeySVG from "@/assets/img/team/amey.svg";
 import ShreyasImg from "@/assets/img/team/shreyash.png";
+import FlashEImg from "@/assets/img/light/flash-e.png";
 
 const StyledAboutSection = styled(Box)({
   backgroundColor: "#000",
@@ -26,11 +28,14 @@ const StyledAboutContent = styled(Box)({
 });
 
 const StyledSectionTitle = styled(Typography)(({ theme }) => ({
-  fontSize: "2rem",
+  fontSize: "70px",
   fontWeight: 700,
   color: "#fff",
   textTransform: "uppercase",
   fontFamily: "var(--font-koulen), sans-serif",
+  display: "flex",
+  alignItems: "center",
+  gap: "0.2rem",
   [theme.breakpoints.down("sm")]: {
     fontSize: "1.5rem",
   },
@@ -76,50 +81,61 @@ const StyledCallout = styled(Typography)(({ theme }) => ({
 }));
 
 const StyledServicesGrid = styled(Box)(({ theme }) => ({
-  display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
-  gap: "3rem 4rem",
+  display: "flex",
+  flexWrap: "wrap",
+  alignItems: "center",
+  gap: "3rem 2rem",
   marginBottom: "4rem",
-  [theme.breakpoints.down("md")]: {
-    gridTemplateColumns: "repeat(2, 1fr)",
-    gap: "2rem 3rem",
-  },
+  marginTop: "2rem",
   [theme.breakpoints.down("sm")]: {
-    gridTemplateColumns: "1fr",
     gap: "2rem",
+    flexDirection: "column",
+    alignItems: "flex-start",
   },
 }));
 
-const StyledServiceItem = styled(Box)({
+const StyledServiceItem = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: "1rem",
   position: "relative",
-});
+  paddingRight: "2rem",
+  "&:not(:last-child)::after": {
+    content: '""',
+    position: "absolute",
+    right: "0",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: "1px",
+    height: "30px",
+    backgroundColor: "#FDFF6D",
+  },
+  [theme.breakpoints.down("sm")]: {
+    paddingRight: "0",
+    "&::after": {
+      display: "none !important",
+    },
+  },
+}));
 
 const StyledServiceIcon = styled(Box)({
   color: "#FF4CF0",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  flexShrink: 0,
   "& .MuiSvgIcon-root": {
-    fontSize: "2.5rem",
+    fontSize: "3rem",
   },
-});
-
-const StyledDivider = styled(Box)({
-  width: "2px",
-  height: "30px",
-  backgroundColor: "#FDFF6D",
-  margin: "0 0.5rem",
 });
 
 const StyledServiceText = styled(Typography)(({ theme }) => ({
   color: "#fff",
-  fontSize: "1rem",
+  fontSize: "1.1rem",
   fontWeight: 400,
+  whiteSpace: "nowrap",
   [theme.breakpoints.down("sm")]: {
-    fontSize: "0.9rem",
+    fontSize: "1rem",
   },
 }));
 
@@ -128,7 +144,7 @@ const StyledTeamSection = styled(Box)({
 });
 
 const StyledTeamTitle = styled(Typography)(({ theme }) => ({
-  fontSize: "3rem",
+  fontSize: "40px",
   fontWeight: 700,
   color: "#fff",
   textTransform: "uppercase",
@@ -149,7 +165,7 @@ const StyledTeamGrid = styled(Box)(({ theme }) => ({
     position: "absolute",
     right: "-2rem",
     top: "0",
-    width: "2px",
+    width: "0.1px",
     height: "100%",
     backgroundColor: "#FDFF6D",
   },
@@ -221,7 +237,7 @@ const teamMembers = [
   {
     name: "Amey S.",
     role: "Writer/Director",
-    avatar: AmeyImg,
+    avatar: AmeySVG,
     bio: "Writing and directing emotions that hit home, drama that keeps it real.",
   },
 ];
@@ -244,19 +260,33 @@ export default function AboutContent() {
         <StyledCallout>Lights, camera, Beep!</StyledCallout>
 
         {/* What We Do Best Section */}
-        <StyledSectionTitle>WHAT WE DO BEST</StyledSectionTitle>
+        <StyledTeamTitle>WHAT WE DO BEST</StyledTeamTitle>
         <StyledServicesGrid>
           {services.map((service, index) => (
             <StyledServiceItem key={index}>
               <StyledServiceIcon>{service.icon}</StyledServiceIcon>
               <StyledServiceText>{service.text}</StyledServiceText>
-              <StyledDivider />
             </StyledServiceItem>
           ))}
         </StyledServicesGrid>
 
         <StyledTeamSection>
-          <StyledTeamTitle>WHO THE BEEP ARE WE?</StyledTeamTitle>
+          <StyledSectionTitle>
+            WHO THE B
+            <Image
+              src={FlashEImg}
+              alt="E"
+              width={60}
+              height={70}
+              style={{
+                width: "auto",
+                height: "53px",
+                objectFit: "contain",
+                display: "inline-block",
+              }}
+            />
+            P ARE WE?
+          </StyledSectionTitle>
           <StyledTeamGrid>
             {teamMembers.map((member, index) => (
               <StyledTeamMember key={index}>

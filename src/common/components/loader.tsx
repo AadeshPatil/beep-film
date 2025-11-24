@@ -14,20 +14,10 @@ const StyledLoaderWrapper = styled(Box)({
   transition: "opacity 0.5s ease-in-out",
 });
 
-const StyledLoaderLogo = styled(Box)({
-  fontSize: "4rem",
-  fontWeight: 700,
-  color: "#fff",
-  letterSpacing: "-0.02em",
-  animation: "pulse 1.5s ease-in-out infinite",
-  "@keyframes pulse": {
-    "0%, 100%": {
-      opacity: 1,
-    },
-    "50%": {
-      opacity: 0.5,
-    },
-  },
+const StyledLoaderVideo = styled("video")({
+  maxWidth: "80%",
+  maxHeight: "80%",
+  objectFit: "contain",
 });
 
 interface LoaderProps {
@@ -39,7 +29,9 @@ export default function Loader({ isLoading }: LoaderProps) {
 
   return (
     <StyledLoaderWrapper>
-      <StyledLoaderLogo>BEEP</StyledLoaderLogo>
+      <StyledLoaderVideo autoPlay loop muted playsInline>
+        <source src="/src/assets/video/loading.mp4" type="video/mp4" />
+      </StyledLoaderVideo>
     </StyledLoaderWrapper>
   );
 }
