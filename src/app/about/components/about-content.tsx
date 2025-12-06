@@ -124,8 +124,12 @@ const StyledServiceIcon = styled(Box)({
   alignItems: "center",
   justifyContent: "center",
   flexShrink: 0,
+  height: "30px",
+  width: "30px",
   "& .MuiSvgIcon-root": {
-    fontSize: "3rem",
+    fontSize: "30px !important",
+    width: "30px",
+    height: "30px",
   },
 });
 
