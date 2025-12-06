@@ -18,10 +18,12 @@ const StyledHeaderWrapper = styled("header")<{ isOpen?: boolean }>(({ isOpen }) 
   zIndex: 50,
   backgroundColor: "rgba(0, 0, 0, 0.5)",
   padding: "3rem 3rem",
-  height: isOpen ? "100vh" : "auto",
-  transition: "height 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s ease",
+  maxHeight: isOpen ? "100vh" : "150px",
+  transition: "max-height 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s ease",
   overflow: "hidden",
 }));
+
+
 
 const StyledNavContainer = styled(Box)({
   display: "flex",
@@ -49,12 +51,14 @@ const StyledMenuButton = styled(IconButton)({
 });
 
 const StyledMenuContent = styled(Box)<{ isOpen?: boolean }>(({ isOpen }) => ({
-  display: isOpen ? "flex" : "none",
+  display: "flex",
   height: "calc(100vh - 12rem)",
   gap: "4rem",
   marginTop: "3rem",
   opacity: isOpen ? 1 : 0,
-  transition: "opacity 0.6s ease-in-out 0.4s",
+  visibility: isOpen ? "visible" : "hidden",
+  transition: "opacity 0.4s ease-in-out, visibility 0.4s ease-in-out",
+  pointerEvents: isOpen ? "auto" : "none",
 }));
 
 const StyledMenuRight = styled(Box)({
@@ -73,17 +77,18 @@ const StyledMenuList = styled(Box)({
   justifyContent: "flex-start",
 });
 
-const StyledMenuLink = styled(Box)({
-  fontSize: "2rem",
+const StyledMenuLink = styled(Box)<{ hoverColor?: string }>(({ hoverColor }) => ({
+  fontSize: "22.76px",
   fontWeight: 700,
+  fontFamily: "Koulen, Regular, sans-serif",
   color: "#fff",
   textDecoration: "none",
-  transition: "opacity 0.3s",
+  transition: "color 0.3s ease",
   cursor: "pointer",
   "&:hover": {
-    opacity: 0.7,
+    color: hoverColor || "#fff",
   },
-});
+}));
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -118,16 +123,16 @@ export default function Header() {
       <StyledMenuContent isOpen={isMenuOpen}>
         <StyledMenuRight>
           <StyledMenuList>
-            <StyledMenuLink onClick={() => handleNavigation("/")}>
+            <StyledMenuLink hoverColor="#00D9FF" onClick={() => handleNavigation("/")}>
               HOME
             </StyledMenuLink>
-            <StyledMenuLink onClick={() => handleNavigation("/work")}>
+            <StyledMenuLink hoverColor="#FFE500" onClick={() => handleNavigation("/work")}>
               WORK
             </StyledMenuLink>
-            <StyledMenuLink onClick={() => handleNavigation("/about")}>
+            <StyledMenuLink hoverColor="#FF00FF" onClick={() => handleNavigation("/about")}>
               ABOUT US
             </StyledMenuLink>
-            <StyledMenuLink onClick={() => handleNavigation("/contact")}>
+            <StyledMenuLink hoverColor="#FF0000" onClick={() => handleNavigation("/contact")}>
               CONTACT US
             </StyledMenuLink>
           </StyledMenuList>
