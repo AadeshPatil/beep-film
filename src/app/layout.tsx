@@ -10,7 +10,7 @@ const koulen = Koulen({
 });
 
 export const metadata: Metadata = {
-  title: "Video Portfolio - Brand x Love",
+  title: "Beep Films",
   description: "Premium video production and creative content portfolio",
 };
 
