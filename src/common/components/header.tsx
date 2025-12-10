@@ -5,12 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { styled } from "@mui/material/styles";
-import { Box, IconButton, Drawer } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import Logo from "@/assets/img/light/logo.png";
 
-const StyledHeaderWrapper = styled("header")<{ isOpen?: boolean }>(({ isOpen }) => ({
+const StyledHeaderWrapper = styled("header")<{ isOpen?: boolean }>(({ isOpen, theme }) => ({
   position: "fixed",
   top: 0,
   left: 0,
@@ -21,17 +21,22 @@ const StyledHeaderWrapper = styled("header")<{ isOpen?: boolean }>(({ isOpen }) 
   maxHeight: isOpen ? "100vh" : "150px",
   transition: "max-height 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s ease",
   overflow: "hidden",
+  [theme.breakpoints.down("sm")]: {
+    padding: "1.5rem 1.5rem",
+    maxHeight: isOpen ? "100vh" : "90px",
+  },
 }));
 
-
-
-const StyledNavContainer = styled(Box)({
+const StyledNavContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-});
+  [theme.breakpoints.down("sm")]: {
+    gap: "0.5rem",
+  },
+}));
 
-const StyledLogo = styled(Link)({
+const StyledLogo = styled(Link)(({ theme }) => ({
   cursor: "pointer",
   display: "flex",
   alignItems: "center",
@@ -39,16 +44,26 @@ const StyledLogo = styled(Link)({
   position: "relative",
   height: "50px",
   width: "120px",
-});
+  [theme.breakpoints.down("sm")]: {
+    height: "38px",
+    width: "90px",
+  },
+}));
 
-const StyledMenuButton = styled(IconButton)({
+const StyledMenuButton = styled(IconButton)(({ theme }) => ({
   color: "#fff",
   width: "auto",
   padding: "0.5rem",
   "& svg": {
     fontSize: "2rem",
   },
-});
+  [theme.breakpoints.down("sm")]: {
+    padding: "0.25rem",
+    "& svg": {
+      fontSize: "1.6rem",
+    },
+  },
+}));
 
 const StyledMenuContent = styled(Box)<{ isOpen?: boolean }>(({ isOpen }) => ({
   display: "flex",
@@ -77,7 +92,7 @@ const StyledMenuList = styled(Box)({
   justifyContent: "flex-start",
 });
 
-const StyledMenuLink = styled(Box)<{ hoverColor?: string }>(({ hoverColor }) => ({
+const StyledMenuLink = styled(Box)<{ hoverColor?: string }>(({ hoverColor, theme }) => ({
   fontSize: "22.76px",
   fontWeight: 700,
   fontFamily: "Koulen, Regular, sans-serif",
@@ -87,6 +102,9 @@ const StyledMenuLink = styled(Box)<{ hoverColor?: string }>(({ hoverColor }) => 
   cursor: "pointer",
   "&:hover": {
     color: hoverColor || "#fff",
+  },
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "18px",
   },
 }));
 
@@ -110,7 +128,7 @@ export default function Header() {
             height={150}
             width={163}
             alt="BEEP FILMS"
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain", width: "100%", height: "auto" }}
             priority
           />
         </StyledLogo>

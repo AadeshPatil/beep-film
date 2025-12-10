@@ -35,7 +35,7 @@ const StyledSectionTitle = styled(Typography)(({ theme }) => ({
   fontFamily: "var(--font-koulen), sans-serif",
   display: "flex",
   alignItems: "center",
-  gap: "0.2rem",
+  gap: "0",
   [theme.breakpoints.down("sm")]: {
     fontSize: "1.5rem",
   },
@@ -81,16 +81,17 @@ const StyledCallout = styled(Typography)(({ theme }) => ({
 }));
 
 const StyledServicesGrid = styled(Box)(({ theme }) => ({
-  display: "flex",
-  flexWrap: "wrap",
-  alignItems: "center",
-  gap: "3rem 2rem",
+  display: "grid",
+  gridTemplateColumns: "repeat(4, 1fr)",
+  gap: "2rem",
   marginBottom: "4rem",
   marginTop: "2rem",
+  [theme.breakpoints.down("md")]: {
+    gridTemplateColumns: "repeat(2, 1fr)",
+  },
   [theme.breakpoints.down("sm")]: {
-    gap: "2rem",
-    flexDirection: "column",
-    alignItems: "flex-start",
+    gridTemplateColumns: "1fr",
+    gap: "1rem",
   },
 }));
 
@@ -99,16 +100,30 @@ const StyledServiceItem = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: "1rem",
   position: "relative",
-  paddingRight: "2rem",
-  "&:not(:last-child)::after": {
+  paddingRight: "0",
+  "&::after": {
     content: '""',
     position: "absolute",
-    right: "0",
+    right: "-1rem",
     top: "50%",
     transform: "translateY(-50%)",
     width: "1px",
     height: "30px",
     backgroundColor: "#FDFF6D",
+  },
+  "&:nth-of-type(4n)::after": {
+    display: "none",
+  },
+  "&:last-child::after": {
+    display: "none",
+  },
+  [theme.breakpoints.down("md")]: {
+    "&:nth-of-type(4n)::after": {
+      display: "block",
+    },
+    "&:nth-of-type(2n)::after": {
+      display: "none",
+    },
   },
   [theme.breakpoints.down("sm")]: {
     paddingRight: "0",
@@ -156,6 +171,7 @@ const StyledTeamTitle = styled(Typography)(({ theme }) => ({
   fontFamily: "var(--font-koulen), sans-serif",
   [theme.breakpoints.down("sm")]: {
     fontSize: "2rem",
+    marginBottom: "2rem",
   },
 }));
 
@@ -212,6 +228,23 @@ const StyledMemberBio = styled(Typography)(({ theme }) => ({
   lineHeight: 1.6,
   [theme.breakpoints.down("sm")]: {
     fontSize: "0.85rem",
+  },
+}));
+
+const StyledFlashImage = styled(Image)(({ theme }) => ({
+  width: "auto",
+  height: "53px",
+  objectFit: "contain",
+  display: "inline-block",
+  [theme.breakpoints.down("sm")]: {
+    height: "22px",
+  },
+}));
+
+const StyledImageTitle = styled(StyledSectionTitle)(({ theme }) => ({
+  fontSize: "53px",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "30px",
   },
 }));
 
@@ -275,22 +308,16 @@ export default function AboutContent() {
         </StyledServicesGrid>
 
         <StyledTeamSection>
-          <StyledSectionTitle>
-            WHO THE B
-            <Image
+          <StyledImageTitle>
+            <span>WHO THE B</span>
+            <StyledFlashImage
               src={FlashEImg}
-              alt="E"
+              alt="EE"
               width={60}
               height={70}
-              style={{
-                width: "auto",
-                height: "53px",
-                objectFit: "contain",
-                display: "inline-block",
-              }}
             />
-            P ARE WE?
-          </StyledSectionTitle>
+            <span>P ARE WE?</span>
+          </StyledImageTitle>
           <StyledTeamGrid>
             {teamMembers.map((member, index) => (
               <StyledTeamMember key={index}>

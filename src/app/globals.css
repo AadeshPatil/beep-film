@@ -30,6 +30,13 @@ body {
 .main-page {
   min-height: 100vh;
   background-color: #000;
+  padding-top: 96px;
+}
+
+@media (max-width: 900px) {
+  .main-page {
+    padding-top: 80px;
+  }
 }
 
 a {

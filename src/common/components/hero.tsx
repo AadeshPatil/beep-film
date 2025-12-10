@@ -2,6 +2,7 @@
 
 import { styled } from "@mui/material/styles";
 import { Box, Typography, IconButton } from "@mui/material";
+import type { TypographyProps } from "@mui/material/Typography";
 import HeroCover from "@/assets/img/light/hero-cover.png";
 import PlayIcon from "@/assets/img/light/play.png";
 import LogoHeader from "@/assets/img/light/animated.gif";
@@ -16,17 +17,29 @@ import { useState, useEffect } from "react";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-const StyledHeroSection = styled(Box)({
+const StyledHeroSection = styled(Box)(({ theme }) => ({
   position: "relative",
-  height: "100vh",
+  minHeight: "90vh",
   width: "100%",
   backgroundColor: "#000",
   overflow: "hidden",
-});
+  display: "flex",
+  alignItems: "stretch",
+  padding: "0 1.25rem",
+  [theme.breakpoints.down("sm")]: {
+    minHeight: "70vh",
+  },
+  [theme.breakpoints.up("md")]: {
+    padding: "0 3rem",
+  },
+}));
 
 const StyledVideoBackground = styled("video")({
-  position: "relative",
+  position: "absolute",
+  inset: 0,
   width: "100%",
+  height: "100%",
+  objectFit: "cover",
   display: "block",
   backgroundColor: "#000",
 });
@@ -37,21 +50,42 @@ const StyledVideoOverlay = styled(Box)({
   left: 0,
   right: 0,
   bottom: 0,
-  backgroundColor: "rgba(0, 0, 0, 0.3)",
+  background: "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.65) 100%)",
   pointerEvents: "none",
 });
 
-const StyledContentWrapper = styled(Box)(({ theme }) => ({
-  position: "absolute",
-  bottom: "3rem",
-  left: "3rem",
-  zIndex: 10,
+const StyledHeroInner = styled(Box)(({ theme }) => ({
+  position: "relative",
+  width: "100%",
+  maxWidth: "1200px",
+  margin: "0 auto",
   display: "flex",
   alignItems: "flex-end",
-  gap: "1.5rem",
+  flex: 1,
+  height: "100%",
+  paddingBottom: "3rem",
+  zIndex: 1,
+  [theme.breakpoints.down("md")]: {
+    paddingBottom: "2rem",
+  },
+}));
+
+const StyledContentWrapper = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  bottom: "2.5rem",
+  left: "0",
+  zIndex: 10,
+  display: "flex",
+  alignItems: "center",
+  gap: "1.25rem",
+  padding: "1rem 1.25rem",
+  borderRadius: "16px",
+  background: "rgba(0,0,0,0.35)",
+  backdropFilter: "blur(10px)",
   [theme.breakpoints.down("sm")]: {
-    bottom: "2rem",
-    left: "2rem",
+    gap: "1rem",
+    padding: "0.75rem 1rem",
+    bottom: "1.5rem",
   },
 }));
 
@@ -61,28 +95,40 @@ const StyledTextContainer = styled(Box)({
   lineHeight: 0.9,
 });
 
-const StyledHeroTitle = styled(Typography)(({ theme }) => ({
-  fontSize: "2rem",
+const StyledHeroTitle = styled(Typography)<TypographyProps>(({ theme }) => ({
+  fontSize: "2.75rem",
   fontWeight: 700,
-  letterSpacing: "-0.02em",
+  letterSpacing: "-0.01em",
   color: "#fff",
   textTransform: "uppercase",
   [theme.breakpoints.up("md")]: {
-    fontSize: "2rem",
+    fontSize: "3.25rem",
   },
   [theme.breakpoints.up("lg")]: {
-    fontSize: "2rem",
+    fontSize: "3.75rem",
   },
   [theme.breakpoints.down("sm")]: {
-    fontSize: "2rem",
+    fontSize: "2.25rem",
+  },
+}));
+
+const StyledHeroSubtitle = styled(Typography)<TypographyProps>(({ theme }) => ({
+  color: "#e5e7eb",
+  fontSize: "1rem",
+  fontWeight: 500,
+  letterSpacing: "0.05em",
+  marginTop: "0.5rem",
+  textTransform: "uppercase",
+  [theme.breakpoints.up("md")]: {
+    fontSize: "1.125rem",
   },
 }));
 
 const StyledRecentsSection = styled(Box)(({ theme }) => ({
   backgroundColor: "#000",
-  padding: "4rem 3rem",
+  padding: "3.5rem 1.5rem 4rem",
   [theme.breakpoints.down("sm")]: {
-    padding: "3rem 2rem",
+    padding: "3rem 1.25rem 3.5rem",
   },
 }));
 
@@ -95,21 +141,24 @@ const StyledRecentsTitle = styled(Typography)(({ theme }) => ({
   fontFamily: "var(--font-koulen), sans-serif",
   alignSelf: "flex-start",
   [theme.breakpoints.down("sm")]: {
-    fontSize: "2rem",
+    fontSize: "1.75rem",
   },
 }));
 
 const StyledCarouselContainer = styled(Box)({
   position: "relative",
   display: "flex",
+  flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
   gap: "2rem",
   maxWidth: "1200px",
   margin: "0 auto",
+  width: "100%",
 });
 
 const StyledCarouselWrapper = styled(Box)({
+  position: "relative",
   overflow: "hidden",
   flex: 1,
   display: "flex",
@@ -125,6 +174,7 @@ const StyledCarouselTrack = styled(Box)<{ currentIndex: number }>(
     height: "100%",
     width: "100%",
     display: "flex",
+    minHeight: "0",
     transition: "transform 0.5s ease-in-out, opacity 0.3s ease-in-out",
     transform: `translateX(-${currentIndex * 100}%)`,
   })
@@ -138,18 +188,23 @@ const StyledVideoCard = styled(Box)(({ theme }) => ({
   flexShrink: 0,
   display: "flex",
   flexDirection: "column",
+  maxWidth: "900px",
   [theme.breakpoints.down("md")]: {
     minWidth: "100%",
   },
 }));
 
-const StyledImageWrapper = styled(Box)({
+const StyledImageWrapper = styled(Box)(({ theme }) => ({
   position: "relative",
   width: "100%",
   aspectRatio: "16/9",
   borderRadius: "20px",
   overflow: "hidden",
-});
+  [theme.breakpoints.down("sm")]: {
+    maxHeight: "220px",
+    aspectRatio: "3/4",
+  },
+}));
 
 const StyledCardImage = styled("img")({
   width: "100%",
@@ -179,7 +234,7 @@ const StyledPlayIcon = styled("img")({
 const StyledTextContent = styled(Box)(({ theme }) => ({
   padding: "1.5rem 0",
   [theme.breakpoints.down("sm")]: {
-    padding: "1rem 0",
+    padding: "0.75rem 0",
   },
 }));
 
@@ -191,7 +246,7 @@ const StyledCardSubtitle = styled(Typography)(({ theme }) => ({
   letterSpacing: "0.05em",
   fontFamily: "var(--font-koulen), sans-serif",
   [theme.breakpoints.down("sm")]: {
-    fontSize: "0.8rem",
+    fontSize: "1rem",
   },
 }));
 
@@ -205,6 +260,31 @@ const StyledNavButton = styled(IconButton)(({ theme }) => ({
     opacity: 0.3,
   },
   [theme.breakpoints.down("md")]: {
+    width: "46px",
+    height: "46px",
+    fontSize: "1rem",
+  },
+}));
+
+const StyledDesktopNavRail = styled(Box)(({ theme }) => ({
+  display: "none",
+  position: "absolute",
+  inset: 0,
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: "0 0.75rem",
+  pointerEvents: "none",
+  [theme.breakpoints.up("md")]: {
+    display: "flex",
+  },
+}));
+
+const StyledMobileNav = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  gap: "0.75rem",
+  marginTop: "1rem",
+  [theme.breakpoints.up("md")]: {
     display: "none",
   },
 }));
@@ -224,9 +304,9 @@ const StyledBrandsTitle = styled(Typography)(({ theme }) => ({
   fontFamily: "var(--font-koulen), sans-serif",
   alignSelf: "flex-start",
   [theme.breakpoints.down("sm")]: {
-    fontSize: "2rem",
+    fontSize: "1.75rem",
   },
-  marginTop: "11rem",
+  marginTop: "5rem",
 }));
 
 const StyledBrandsScroller = styled(Box)({
@@ -234,6 +314,7 @@ const StyledBrandsScroller = styled(Box)({
   overflow: "hidden",
   position: "relative",
   width: "100%",
+  padding: "0.5rem 0",
   "&::before, &::after": {
     content: '""',
     position: "absolute",
@@ -254,8 +335,8 @@ const StyledBrandsScroller = styled(Box)({
 
 const StyledBrandsTrack = styled(Box)({
   display: "flex",
-  gap: "4rem",
-  animation: "scroll 10s linear infinite",
+  gap: "3rem",
+  animation: "scroll 14s linear infinite",
   "@keyframes scroll": {
     "0%": {
       transform: "translateX(0)",
@@ -345,6 +426,14 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, []);
 
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? recentVideos.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev >= recentVideos.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <>
       <StyledHeroSection>
@@ -360,6 +449,24 @@ export default function Hero() {
         </StyledVideoBackground>
 
         <StyledVideoOverlay />
+
+        <StyledHeroInner>
+          <StyledContentWrapper>
+            <Box
+              component="img"
+              src={LogoHeader.src}
+              alt="Beep Films animated logo"
+              sx={{
+                height: { xs: "64px", sm: "80px", md: "96px" },
+                width: "auto",
+              }}
+            />
+            <StyledTextContainer>
+              <StyledHeroTitle component="h1">Crafting Stories That Move</StyledHeroTitle>
+              <StyledHeroSubtitle component="p">Films, spots, and stories across mediums</StyledHeroSubtitle>
+            </StyledTextContainer>
+          </StyledContentWrapper>
+        </StyledHeroInner>
       </StyledHeroSection>
 
       {/* Recents Section */}
@@ -399,8 +506,7 @@ export default function Hero() {
                 </StyledVideoCard>
               ))}
             </StyledCarouselTrack>
-            {/* Brand Collaborations Section */}
-
+          
             <StyledBrandsTitle>BRAND COLLABORATIONS</StyledBrandsTitle>
             <StyledBrandsScroller>
               <StyledBrandsTrack>
