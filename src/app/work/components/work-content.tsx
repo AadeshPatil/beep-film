@@ -5,11 +5,25 @@ import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 import Header from "@/common/components/header";
 
-const StyledWorkSection = styled(Box)({
+const StyledWorkSection = styled(Box)(({ theme }) => ({
   backgroundColor: "#000",
   minHeight: "100vh",
-  padding: "5rem 4rem 4rem",
-  marginTop: "80px",
+  padding: "4rem 3rem 3.5rem",
+  marginTop: "40px",
+  [theme.breakpoints.down("sm")]: {
+    padding: "2.5rem 1rem 2.5rem",
+    marginTop: "60px",
+  },
+  [theme.breakpoints.between("sm", "md")]: {
+    padding: "3rem 2rem 3rem",
+    marginTop: "24px",
+  },
+}));
+
+const StyledWorkInner = styled(Box)({
+  maxWidth: "1400px",
+  margin: "0 auto",
+  width: "100%",
 });
 
 const StyledWorkTitle = styled(Typography)(({ theme }) => ({
@@ -17,11 +31,13 @@ const StyledWorkTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 700,
   color: "#fff",
   textTransform: "uppercase",
-  marginBottom: "4rem",
+  margin: "0 auto 4rem",
   fontFamily: "var(--font-koulen), sans-serif",
+  width: "100%",
+  maxWidth: "100%",
   [theme.breakpoints.down("sm")]: {
     fontSize: "2.5rem",
-    marginBottom: "2rem",
+    margin: "0 auto 2rem",
   },
 }));
 
@@ -29,8 +45,7 @@ const StyledWorkGrid = styled(Box)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "repeat(2, 1fr)",
   gap: "2rem",
-  maxWidth: "1400px",
-  margin: "0 auto",
+  width: "100%",
   [theme.breakpoints.down("md")]: {
     gridTemplateColumns: "1fr",
     gap: "1.5rem",
@@ -150,17 +165,19 @@ export default function WorkContent() {
     <>
       <Header />
       <StyledWorkSection>
-        <StyledWorkTitle>WORK</StyledWorkTitle>
-        <StyledWorkGrid>
-        {workItems.map((work) => (
-          <StyledWorkCard key={work.id}>
-            <StyledWorkImageWrapper>
-              <StyledWorkImage src={work.imageSrc} alt={work.label} />
-            </StyledWorkImageWrapper>
-            <StyledWorkCategory>{work.category}</StyledWorkCategory>
-          </StyledWorkCard>
-        ))}
-      </StyledWorkGrid>
+        <StyledWorkInner>
+          <StyledWorkTitle>WORK</StyledWorkTitle>
+          <StyledWorkGrid>
+            {workItems.map((work) => (
+              <StyledWorkCard key={work.id}>
+                <StyledWorkImageWrapper>
+                  <StyledWorkImage src={work.imageSrc} alt={work.label} />
+                </StyledWorkImageWrapper>
+                <StyledWorkCategory>{work.category}</StyledWorkCategory>
+              </StyledWorkCard>
+            ))}
+          </StyledWorkGrid>
+        </StyledWorkInner>
       </StyledWorkSection>
     </>
   );

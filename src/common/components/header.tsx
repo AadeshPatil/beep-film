@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -10,16 +10,17 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import Logo from "@/assets/img/light/logo.png";
 
-const StyledHeaderWrapper = styled("header")<{ isOpen?: boolean }>(({ isOpen, theme }) => ({
+const StyledHeaderWrapper = styled("header")<{ isOpen?: boolean; isHidden?: boolean }>(({ isOpen, isHidden, theme }) => ({
   position: "fixed",
   top: 0,
   left: 0,
   right: 0,
   zIndex: 50,
   backgroundColor: "rgba(0, 0, 0, 0.5)",
-  padding: "3rem 3rem",
-  maxHeight: isOpen ? "100vh" : "150px",
-  transition: "max-height 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s ease",
+  padding: "2rem 2.5rem",
+  maxHeight: isOpen ? "100vh" : "120px",
+  transform: isHidden && !isOpen ? "translateY(-120%)" : "translateY(0)",
+  transition: "max-height 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s ease, transform 0.4s ease",
   overflow: "hidden",
   [theme.breakpoints.down("sm")]: {
     padding: "1.5rem 1.5rem",
@@ -42,8 +43,8 @@ const StyledLogo = styled(Link)(({ theme }) => ({
   alignItems: "center",
   textDecoration: "none",
   position: "relative",
-  height: "50px",
-  width: "120px",
+  height: "42px",
+  width: "110px",
   [theme.breakpoints.down("sm")]: {
     height: "38px",
     width: "90px",
@@ -110,7 +111,36 @@ const StyledMenuLink = styled(Box)<{ hoverColor?: string }>(({ hoverColor, theme
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const lastScrollY = useRef(0);
   const router = useRouter();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isMenuOpen) {
+        setIsHidden(false);
+        lastScrollY.current = window.scrollY;
+        return;
+      }
+
+      const currentY = window.scrollY;
+      const scrollingDown = currentY > lastScrollY.current + 8;
+      const scrollingUp = currentY < lastScrollY.current - 8;
+
+      if (scrollingDown && currentY > 80) {
+        setIsHidden(true);
+      } else if (scrollingUp || currentY <= 80) {
+        setIsHidden(false);
+      }
+
+      lastScrollY.current = currentY;
+    };
+
+    lastScrollY.current = window.scrollY;
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMenuOpen]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -120,7 +150,7 @@ export default function Header() {
   };
 
   return (
-    <StyledHeaderWrapper isOpen={isMenuOpen}>
+    <StyledHeaderWrapper isOpen={isMenuOpen} isHidden={isHidden}>
       <StyledNavContainer>
         <StyledLogo href="/">
           <Image
@@ -149,6 +179,9 @@ export default function Header() {
             </StyledMenuLink>
             <StyledMenuLink hoverColor="#FF00FF" onClick={() => handleNavigation("/about")}>
               ABOUT US
+            </StyledMenuLink>
+            <StyledMenuLink hoverColor="#FF00FF" onClick={() => handleNavigation("/")}>
+              SHOW REEL
             </StyledMenuLink>
             <StyledMenuLink hoverColor="#FF0000" onClick={() => handleNavigation("/contact")}>
               CONTACT US

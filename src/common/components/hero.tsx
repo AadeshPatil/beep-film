@@ -14,6 +14,7 @@ import Logo5 from "@/assets/img/company-logos/image copy 4.png";
 import Logo6 from "@/assets/img/company-logos/image copy 5.png";
 import Logo7 from "@/assets/img/company-logos/yale.png";
 import { useState, useEffect } from "react";
+import type { TouchEvent, PointerEvent } from "react";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
@@ -126,36 +127,28 @@ const StyledHeroSubtitle = styled(Typography)<TypographyProps>(({ theme }) => ({
 
 const StyledRecentsSection = styled(Box)(({ theme }) => ({
   backgroundColor: "#000",
-  padding: "3.5rem 1.5rem 4rem",
+  padding: "1rem 0 2rem",
   [theme.breakpoints.down("sm")]: {
-    padding: "3rem 1.25rem 3.5rem",
+    padding: "1rem 0 1.5rem",
   },
 }));
 
-const StyledRecentsTitle = styled(Typography)(({ theme }) => ({
-  fontSize: "2.5rem",
-  fontWeight: 400,
-  color: "#fff",
-  textTransform: "uppercase",
-  marginBottom: "2rem",
-  fontFamily: "var(--font-koulen), sans-serif",
-  alignSelf: "flex-start",
-  [theme.breakpoints.down("sm")]: {
-    fontSize: "1.75rem",
-  },
-}));
 
-const StyledCarouselContainer = styled(Box)({
+const StyledCarouselContainer = styled(Box)(({ theme }) => ({
   position: "relative",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
   gap: "2rem",
-  maxWidth: "1200px",
+  maxWidth: "100%",
   margin: "0 auto",
   width: "100%",
-});
+  padding: "0 1.5rem",
+  [theme.breakpoints.up("md")]: {
+    padding: "0 3rem",
+  },
+}));
 
 const StyledCarouselWrapper = styled(Box)({
   position: "relative",
@@ -165,20 +158,25 @@ const StyledCarouselWrapper = styled(Box)({
   flexDirection: "column",
   alignItems: "center",
   width: "100%",
-  maxWidth: "900px",
+  maxWidth: "100%",
   margin: "0 auto",
 });
 
-const StyledCarouselTrack = styled(Box)<{ currentIndex: number }>(
-  ({ currentIndex }) => ({
-    height: "100%",
-    width: "100%",
-    display: "flex",
-    minHeight: "0",
-    transition: "transform 0.5s ease-in-out, opacity 0.3s ease-in-out",
-    transform: `translateX(-${currentIndex * 100}%)`,
-  })
-);
+const StyledCarouselTrack = styled(Box)<{
+  currentIndex: number;
+  transitionEnabled: boolean;
+  isDragging: boolean;
+}>(({ currentIndex, transitionEnabled, isDragging }) => ({
+  height: "100%",
+  width: "100%",
+  display: "flex",
+  minHeight: "0",
+  userSelect: "none",
+  touchAction: "pan-y",
+  cursor: isDragging ? "grabbing" : "grab",
+  transition: transitionEnabled ? "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)" : "none",
+  transform: `translateX(-${currentIndex * 100}%)`,
+}));
 
 const StyledVideoCard = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -188,22 +186,23 @@ const StyledVideoCard = styled(Box)(({ theme }) => ({
   flexShrink: 0,
   display: "flex",
   flexDirection: "column",
-  maxWidth: "900px",
+  maxWidth: "100%",
+  height: "85vh",
+  borderRadius: "24px",
+  overflow: "hidden",
+  justifyContent: "center",
   [theme.breakpoints.down("md")]: {
     minWidth: "100%",
+    height: "auto",
+    aspectRatio: "16/9",
   },
 }));
 
 const StyledImageWrapper = styled(Box)(({ theme }) => ({
   position: "relative",
   width: "100%",
-  aspectRatio: "16/9",
-  borderRadius: "20px",
+  height: "100%",
   overflow: "hidden",
-  [theme.breakpoints.down("sm")]: {
-    maxHeight: "220px",
-    aspectRatio: "3/4",
-  },
 }));
 
 const StyledCardImage = styled("img")({
@@ -232,9 +231,17 @@ const StyledPlayIcon = styled("img")({
 });
 
 const StyledTextContent = styled(Box)(({ theme }) => ({
-  padding: "1.5rem 0",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  width: "100%",
+  padding: "3rem 2rem",
+  background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%)",
+  zIndex: 2,
+  display: "flex",
+  justifyContent: "flex-end",
   [theme.breakpoints.down("sm")]: {
-    padding: "0.75rem 0",
+    padding: "2rem 1.5rem",
   },
 }));
 
@@ -245,6 +252,7 @@ const StyledCardSubtitle = styled(Typography)(({ theme }) => ({
   textTransform: "uppercase",
   letterSpacing: "0.05em",
   fontFamily: "var(--font-koulen), sans-serif",
+  textAlign: "right",
   [theme.breakpoints.down("sm")]: {
     fontSize: "1rem",
   },
@@ -295,18 +303,39 @@ const StyledBrandsContainer = styled(Box)({
   margin: "0 auto",
 });
 
+const StyledRecentsTitle = styled(Typography)(({ theme }) => ({
+  fontSize: "2.5rem",
+  fontWeight: 400,
+  color: "#fff",
+  textTransform: "uppercase",
+  marginBottom: "2rem",
+  marginTop: "1rem",
+  fontFamily: "var(--font-koulen), sans-serif",
+  alignSelf: "flex-start",
+  paddingLeft: "1.5rem",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "1.75rem",
+    paddingLeft: "1.25rem",
+    marginBottom: "1.5rem",
+  },
+}));
+
 const StyledBrandsTitle = styled(Typography)(({ theme }) => ({
   fontSize: "2.5rem",
   fontWeight: 400,
   color: "#fff",
   textTransform: "uppercase",
   marginBottom: "2rem",
+  marginTop: "4rem",
   fontFamily: "var(--font-koulen), sans-serif",
   alignSelf: "flex-start",
+  paddingLeft: "1.5rem",
+  letterSpacing: "0.05em",
   [theme.breakpoints.down("sm")]: {
-    fontSize: "1.75rem",
+    fontSize: "1.25rem",
+    paddingLeft: "1.25rem",
+    marginTop: "4rem",
   },
-  marginTop: "5rem",
 }));
 
 const StyledBrandsScroller = styled(Box)({
@@ -352,8 +381,8 @@ const StyledBrandsTrack = styled(Box)({
 
 const StyledBrandLogo = styled(Box)({
   flexShrink: 0,
-  width: "150px",
-  height: "80px",
+  width: "100px",
+  height: "50px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -410,28 +439,131 @@ const brandLogos = [
   { id: 7, name: "Yale", src: Logo7.src },
 ];
 
+const extendedVideos = [
+  recentVideos[recentVideos.length - 1],
+  ...recentVideos,
+  recentVideos[0],
+];
+const realSlideCount = recentVideos.length;
+
 export default function Hero() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(1);
+  const [transitionEnabled, setTransitionEnabled] = useState(true);
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const [dragCurrentX, setDragCurrentX] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [pointerId, setPointerId] = useState<number | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        if (prev >= recentVideos.length - 1) {
-          return 0;
-        }
-        return prev + 1;
-      });
+      setTransitionEnabled(true);
+      setCurrentIndex((prev) => prev + 1);
     }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (!transitionEnabled) return;
+
+    if (currentIndex === extendedVideos.length - 1) {
+      // reached cloned last -> jump to first real
+      setTimeout(() => {
+        setTransitionEnabled(false);
+        setCurrentIndex(1);
+      }, 20);
+    } else if (currentIndex === 0) {
+      // reached cloned first -> jump to last real
+      setTimeout(() => {
+        setTransitionEnabled(false);
+        setCurrentIndex(realSlideCount);
+      }, 20);
+    }
+  }, [currentIndex, transitionEnabled]);
+
+  useEffect(() => {
+    if (!transitionEnabled) {
+      requestAnimationFrame(() => setTransitionEnabled(true));
+    }
+  }, [transitionEnabled]);
+
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? recentVideos.length - 1 : prev - 1));
+    setTransitionEnabled(true);
+    setCurrentIndex((prev) => prev - 1);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev >= recentVideos.length - 1 ? 0 : prev + 1));
+    setTransitionEnabled(true);
+    setCurrentIndex((prev) => prev + 1);
+  };
+
+  const updateDrag = (clientX: number) => {
+    setDragStartX((prev) => (prev === null ? clientX : prev));
+    setDragCurrentX(clientX);
+    setIsDragging(true);
+  };
+
+  const handleGestureEnd = () => {
+    if (dragStartX === null || dragCurrentX === null) {
+      setIsDragging(false);
+      return;
+    }
+    const distance = dragStartX - dragCurrentX;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) handleNext();
+    if (isRightSwipe) handlePrev();
+
+    setDragStartX(null);
+    setDragCurrentX(null);
+    setIsDragging(false);
+  };
+
+  const handleTouchStart = (e: TouchEvent) => {
+    updateDrag(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    updateDrag(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    handleGestureEnd();
+  };
+
+  const handlePointerDown = (e: PointerEvent) => {
+    if (e.pointerId !== undefined) {
+      setPointerId(e.pointerId);
+      if (e.currentTarget && (e.currentTarget as HTMLElement).setPointerCapture) {
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      }
+    }
+    updateDrag(e.clientX);
+  };
+
+  const handlePointerMove = (e: PointerEvent) => {
+    if (dragStartX !== null) {
+      updateDrag(e.clientX);
+    }
+  };
+
+  const handlePointerUp = () => {
+    handleGestureEnd();
+    setPointerId(null);
+  };
+
+  const handleTransitionEnd = () => {
+    if (currentIndex === extendedVideos.length - 1) {
+      setTransitionEnabled(false);
+      setCurrentIndex(1);
+      requestAnimationFrame(() => setTransitionEnabled(true));
+    }
+    if (currentIndex === 0) {
+      setTransitionEnabled(false);
+      setCurrentIndex(extendedVideos.length - 2);
+      requestAnimationFrame(() => setTransitionEnabled(true));
+    }
   };
 
   return (
@@ -475,10 +607,23 @@ export default function Hero() {
 
           <StyledCarouselWrapper>
             <StyledRecentsTitle>RECENTS</StyledRecentsTitle>
-            <StyledCarouselTrack currentIndex={currentIndex}>
-              {recentVideos.map((video) => (
+            <StyledCarouselTrack 
+              currentIndex={currentIndex}
+              transitionEnabled={transitionEnabled}
+              isDragging={isDragging}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerLeave={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              onTransitionEnd={handleTransitionEnd}
+            >
+              {extendedVideos.map((video, index) => (
                 <StyledVideoCard
-                  key={video.id}
+                  key={`${video.id}-${index}`}
                   sx={{
                     "&:hover .play-icon": {
                       opacity: 1,
@@ -498,11 +643,11 @@ export default function Hero() {
                         alt="Play"
                       />
                     </StyledCardOverlay>
-                  </StyledImageWrapper>
 
-                  <StyledTextContent>
-                    <StyledCardSubtitle>{video.subtitle}</StyledCardSubtitle>
-                  </StyledTextContent>
+                    <StyledTextContent>
+                      <StyledCardSubtitle>{video.subtitle}</StyledCardSubtitle>
+                    </StyledTextContent>
+                  </StyledImageWrapper>
                 </StyledVideoCard>
               ))}
             </StyledCarouselTrack>

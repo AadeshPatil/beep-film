@@ -15,12 +15,15 @@ import AmeySVG from "@/assets/img/team/amey.svg";
 import ShreyasImg from "@/assets/img/team/shreyash.png";
 import FlashEImg from "@/assets/img/light/flash-e.png";
 
-const StyledAboutSection = styled(Box)({
+const StyledAboutSection = styled(Box)(({ theme }) => ({
   backgroundColor: "#000",
   minHeight: "100vh",
   padding: "6rem 3rem 4rem",
-  marginTop: "80px",
-});
+  marginTop: "40px",
+  [theme.breakpoints.down("sm")]: {
+    marginTop: "20px",
+  },
+}));
 
 const StyledAboutContent = styled(Box)({
   maxWidth: "1200px",
