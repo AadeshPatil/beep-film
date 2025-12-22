@@ -218,7 +218,6 @@ const StyledAvatar = styled(Box)({
   height: "200px",
   display: "flex",
   alignItems: "center",
-  justifyContent: "center",
   marginBottom: "1rem",
   "& img": {
     width: "100%",
