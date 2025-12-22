@@ -17,14 +17,14 @@ const StyledHeaderWrapper = styled("header")<{ isOpen?: boolean; isHidden?: bool
   right: 0,
   zIndex: 50,
   backgroundColor: "rgba(0, 0, 0, 0.5)",
-  padding: "2rem 2.5rem",
-  maxHeight: isOpen ? "100vh" : "120px",
+  padding: "1rem 2rem",
+  maxHeight: isOpen ? "100vh" : "90px",
   transform: isHidden && !isOpen ? "translateY(-120%)" : "translateY(0)",
   transition: "max-height 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 1s ease, transform 0.4s ease",
   overflow: "hidden",
   [theme.breakpoints.down("sm")]: {
     padding: "1.5rem 1.5rem",
-    maxHeight: isOpen ? "100vh" : "90px",
+    maxHeight: isOpen ? "100vh" : "80px",
   },
 }));
 
