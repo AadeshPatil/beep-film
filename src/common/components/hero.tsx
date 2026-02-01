@@ -13,12 +13,30 @@ import Logo4 from "@/assets/img/company-logos/image copy 3.png";
 import Logo5 from "@/assets/img/company-logos/image copy 4.png";
 import Logo6 from "@/assets/img/company-logos/image copy 5.png";
 import Logo7 from "@/assets/img/company-logos/yale.png";
+import YaleZuriDvcThumbnail from "@/assets/img/thumbnails/Yale_Zuri-DVC.png";
+import KraDiamondsDigitalThumbnail from "@/assets/img/thumbnails/Kra_jewellers-Diamonds_Digital_campaign.png";
 import { useState, useEffect, useRef } from "react";
 import type { TouchEvent, PointerEvent } from "react";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import CloseIcon from "@mui/icons-material/Close";
+import Image from "next/image";
+const PlayButtonOverlay = styled(Box)({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "rgba(0, 0, 0, 0.3)",
+  cursor: "pointer",
+  transition: "background-color 0.3s ease",
+  zIndex: 3
+});
 
 const StyledHeroSection = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -182,25 +200,80 @@ const StyledCarouselTrack = styled(Box)<{
   transform: `translateX(-${currentIndex * 100}%)`
 }));
 
+const StyledSlideWrapper = styled(Box)({
+  minWidth: "100%",
+  width: "100%",
+  flexShrink: 0,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: "0 10px"
+});
+
 const StyledVideoCard = styled(Box)(({ theme }) => ({
   position: "relative",
-  width: "100%",
-  minWidth: "100%",
+  width: "95%",
+  minWidth: "95%",
   cursor: "pointer",
   flexShrink: 0,
   display: "flex",
   flexDirection: "column",
-  maxWidth: "100%",
-  height: "85vh",
+  maxWidth: "1200%",
+  aspectRatio: "16/9",
   borderRadius: "24px",
   overflow: "hidden",
   justifyContent: "center",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
   [theme.breakpoints.down("md")]: {
-    minWidth: "100%",
+    width: "100%",
     height: "auto",
     aspectRatio: "16/9"
   }
 }));
+
+const StyledModalOverlay = styled(Box)({
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: "rgba(0, 0, 0, 0.9)",
+  zIndex: 9999,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "2rem",
+  opacity: 0,
+  visibility: "hidden",
+  transition: "opacity 0.3s ease, visibility 0.3s ease",
+  "&.open": {
+    opacity: 1,
+    visibility: "visible"
+  }
+});
+
+const StyledModalContent = styled(Box)({
+  position: "relative",
+  width: "100%",
+  maxWidth: "1200px",
+  aspectRatio: "16/9",
+  backgroundColor: "#000",
+  borderRadius: "16px",
+  overflow: "hidden",
+  boxShadow: "0 20px 50px rgba(0,0,0,0.5)"
+});
+
+const StyledCloseButton = styled(IconButton)({
+  position: "absolute",
+  top: "20px",
+  right: "20px",
+  color: "#fff",
+  backgroundColor: "rgba(255,255,255,0.1)",
+  zIndex: 10000,
+  "&:hover": {
+    backgroundColor: "rgba(255,255,255,0.2)"
+  }
+});
 
 const StyledImageWrapper = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -406,7 +479,8 @@ const recentVideos = [
     subtitle: "LINE PRODUCTION | SHRIRAM FINANCE",
     brand: "SHRIRAM",
     videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/ZURI%20Final%20Output%20LONG%204K%20(1).mp4"
+      "https://static.kleemservices.com/beepfilms/videos/ZURI%20Final%20Output%20LONG%204K%20(1).mp4",
+    thumbnail: YaleZuriDvcThumbnail
   },
   {
     id: 2,
@@ -414,7 +488,8 @@ const recentVideos = [
     subtitle: "BRAND CAMPAIGN | CREATIVE STUDIO",
     brand: "BRAND",
     videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Specialdiscount.mp4"
+      "https://static.kleemservices.com/beepfilms/videos/Specialdiscount.mp4",
+    thumbnail: KraDiamondsDigitalThumbnail
   }
 ];
 
@@ -437,12 +512,19 @@ const realSlideCount = recentVideos.length;
 
 export default function Hero() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const [selectedVideo, setSelectedVideo] = useState<{
+    id: number;
+    videoSrc: string;
+  } | null>(null);
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [transitionEnabled, setTransitionEnabled] = useState(true);
-  const [dragStartX, setDragStartX] = useState<number | null>(null);
-  const [dragCurrentX, setDragCurrentX] = useState<number | null>(null);
+
+  const dragStartXRef = useRef<number | null>(null);
+  const dragCurrentXRef = useRef<number | null>(null);
+  const isSwipingRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [pointerId, setPointerId] = useState<number | null>(null);
+
   const [isMuted, setIsMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
@@ -522,72 +604,64 @@ export default function Hero() {
     setCurrentIndex((prev) => prev + 1);
   };
 
-  const updateDrag = (clientX: number) => {
-    setDragStartX((prev) => (prev === null ? clientX : prev));
-    setDragCurrentX(clientX);
-    setIsDragging(true);
+  const handlePointerDown = (e: React.PointerEvent) => {
+    dragStartXRef.current = e.clientX;
+    isSwipingRef.current = false;
   };
 
-  const handleGestureEnd = () => {
-    if (dragStartX === null || dragCurrentX === null) {
-      setIsDragging(false);
-      return;
-    }
-    const distance = dragStartX - dragCurrentX;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (dragStartXRef.current === null) return;
+    dragCurrentXRef.current = e.clientX;
 
-    if (isLeftSwipe) handleNext();
-    if (isRightSwipe) handlePrev();
-
-    setDragStartX(null);
-    setDragCurrentX(null);
-    setIsDragging(false);
-  };
-
-  const handleVideoPlay = () => {
-    setIsVideoPlaying(true);
-  };
-
-  const handleVideoPause = () => {
-    setIsVideoPlaying(false);
-  };
-
-  const handleTouchStart = (e: TouchEvent) => {
-    updateDrag(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: TouchEvent) => {
-    updateDrag(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    handleGestureEnd();
-  };
-
-  const handlePointerDown = (e: PointerEvent) => {
-    if (e.pointerId !== undefined) {
-      setPointerId(e.pointerId);
-      if (
-        e.currentTarget &&
-        (e.currentTarget as HTMLElement).setPointerCapture
-      ) {
-        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-      }
-    }
-    updateDrag(e.clientX);
-  };
-
-  const handlePointerMove = (e: PointerEvent) => {
-    if (dragStartX !== null) {
-      updateDrag(e.clientX);
+    if (Math.abs(e.clientX - dragStartXRef.current) > 10) {
+      isSwipingRef.current = true;
+      if (!isDragging) setIsDragging(true);
     }
   };
 
   const handlePointerUp = () => {
-    handleGestureEnd();
-    setPointerId(null);
+    if (dragStartXRef.current === null || dragCurrentXRef.current === null) {
+      dragStartXRef.current = null;
+      dragCurrentXRef.current = null;
+      return;
+    }
+
+    const distance = dragStartXRef.current - dragCurrentXRef.current;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isSwipingRef.current) {
+      if (isLeftSwipe) handleNext();
+      if (isRightSwipe) handlePrev();
+    }
+
+    dragStartXRef.current = null;
+    dragCurrentXRef.current = null;
+    setIsDragging(false);
+
+    // Delay clearing the swipe flag so onClick can see it
+    setTimeout(() => {
+      isSwipingRef.current = false;
+    }, 100);
   };
+
+  const handleVideoPlay = () => {
+    // setIsVideoPlaying(true); // Handled by modal state now
+  };
+
+  const handleVideoPause = () => {
+    // setIsVideoPlaying(false);
+  };
+
+  useEffect(() => {
+    if (selectedVideo) {
+      setIsVideoPlaying(true);
+      document.body.style.overflow = "hidden";
+    } else {
+      setIsVideoPlaying(false);
+      document.body.style.overflow = "";
+    }
+  }, [selectedVideo]);
 
   const handleTransitionEnd = () => {
     if (currentIndex === extendedVideos.length - 1) {
@@ -668,9 +742,6 @@ export default function Hero() {
               currentIndex={currentIndex}
               transitionEnabled={transitionEnabled}
               isDragging={isDragging}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
@@ -679,36 +750,37 @@ export default function Hero() {
               onTransitionEnd={handleTransitionEnd}
             >
               {extendedVideos.map((video, index) => (
-                <StyledVideoCard
-                  key={`${video.id}-${index}`}
-                  sx={{
-                    "&:hover .play-icon": {
-                      opacity: 1
-                    },
-                    "&:hover .card-overlay": {
-                      background: "rgba(0, 0, 0, 0.5)"
-                    }
-                  }}
-                >
-                  <StyledImageWrapper>
-                    <StyledVideoBackground
-                      controls
-                      playsInline
-                      onPlay={handleVideoPlay}
-                      onPause={handleVideoPause}
-                    >
-                      {/* <source src="https://static.kleemservices.com/beepfilms/videos/9to5Diamond_DirPreview_1809.mp4" type="video/mp4" /> */}
-                      <source
-                        src={video.videoSrc}
-                        type="video/mp4"
+                <StyledSlideWrapper key={`${video.id}-${index}`}>
+                  <StyledVideoCard
+                    onClick={() => {
+                      if (isSwipingRef.current) return;
+                      setSelectedVideo({
+                        id: video.id,
+                        videoSrc: video.videoSrc
+                      });
+                    }}
+                    sx={{
+                      "&:hover .play-button": {
+                        transform: "scale(1.1)"
+                      }
+                    }}
+                  >
+                    <StyledImageWrapper>
+                      <StyledCardImage
+                        src={video.thumbnail.src}
+                        alt={video.title}
                       />
-                    </StyledVideoBackground>
-
-                    {/* <StyledTextContent>
-                      <StyledCardSubtitle>{video.subtitle}</StyledCardSubtitle>
-                    </StyledTextContent> */}
-                  </StyledImageWrapper>
-                </StyledVideoCard>
+                      <PlayButtonOverlay className="card-overlay">
+                        <Image
+                          src={PlayIcon.src}
+                          alt="Play video"
+                          width={70}
+                          height={70}
+                        />
+                      </PlayButtonOverlay>
+                    </StyledImageWrapper>
+                  </StyledVideoCard>
+                </StyledSlideWrapper>
               ))}
             </StyledCarouselTrack>
 
@@ -725,6 +797,31 @@ export default function Hero() {
           </StyledCarouselWrapper>
         </StyledCarouselContainer>
       </StyledRecentsSection>
+
+      {/* Video Modal */}
+      <StyledModalOverlay
+        className={selectedVideo ? "open" : ""}
+        onClick={() => setSelectedVideo(null)}
+      >
+        {selectedVideo && (
+          <>
+            <StyledCloseButton
+              onClick={() => setSelectedVideo(null)}
+              aria-label="Close video"
+            >
+              <CloseIcon />
+            </StyledCloseButton>
+            <StyledModalContent onClick={(e) => e.stopPropagation()}>
+              <StyledVideoBackground
+                controls
+                autoPlay
+                playsInline
+                src={selectedVideo.videoSrc}
+              />
+            </StyledModalContent>
+          </>
+        )}
+      </StyledModalOverlay>
     </>
   );
 }

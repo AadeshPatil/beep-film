@@ -358,7 +358,7 @@ const workItems = [
   {
     id: 15,
     label: "Festive Collection",
-    category: "No name provided", //name was not provided
+    category: "VIPS digital campaign Film 5", //Replace this with actual name 
      videoSrc:
       "https://static.kleemservices.com/beepfilms/videos/ShakuniFinal.mp4",
     thumbnail: ShakuniFinalThumbnail,
