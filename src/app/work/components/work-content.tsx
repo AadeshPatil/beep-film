@@ -10,20 +10,20 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
-import KRAJewellers1Thumbnail from "@/assets/img/thumbnails/KRA_Jewellers_1.png";
-import KRAJewellers2Thumbnail from "@/assets/img/thumbnails/KRA_Jewellers_2.png";
-import Kohinoor1Thumbnail from "@/assets/img/thumbnails/Kohinoor_1.png";
-import Kohinoor2Thumbnail from "@/assets/img/thumbnails/Kohinoor_2.png";
-import KRABridalCampaignThumbnail from "@/assets/img/thumbnails/KRA_jewellers-Bridal_campaign_Digital.png";
-import KraDailyDiamondsThumbnail from "@/assets/img/thumbnails/Kra Jewellers-Daily_Diamonds.png";
-import KraDiamondsDigitalThumbnail from "@/assets/img/thumbnails/Kra_jewellers-Diamonds_Digital_campaign.png";
-import SebamedDigitalAdThumbnail from "@/assets/img/thumbnails/Sebamed-digital_ad.png";
-import ShakuniFinalThumbnail from "@/assets/img/thumbnails/Shakuni_final.png";
-import VipsFilm1Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_1.png";
-import VipsFilm2Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_2.png";
-import VipsFilm3Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_3.png";
-import VipsFilm4Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_4.png";
-import YaleZuriDvcThumbnail from "@/assets/img/thumbnails/Yale_Zuri-DVC.png";
+import KRAJewellers1Thumbnail from "@/assets/img/thumbnails/KRA_Jewellers_1.webp";
+import KRAJewellers2Thumbnail from "@/assets/img/thumbnails/KRA_Jewellers_2.webp";
+import Kohinoor1Thumbnail from "@/assets/img/thumbnails/Kohinoor_1.webp";
+import Kohinoor2Thumbnail from "@/assets/img/thumbnails/Kohinoor_2.webp";
+import KRABridalCampaignThumbnail from "@/assets/img/thumbnails/KRA_jewellers-Bridal_campaign_Digital.webp";
+import KraDailyDiamondsThumbnail from "@/assets/img/thumbnails/Kra Jewellers-Daily_Diamonds.webp";
+import KraDiamondsDigitalThumbnail from "@/assets/img/thumbnails/Kra_jewellers-Diamonds_Digital_campaign.webp";
+import SebamedDigitalAdThumbnail from "@/assets/img/thumbnails/Sebamed-digital_ad.webp";
+import ShakuniFinalThumbnail from "@/assets/img/thumbnails/Shakuni_final.webp";
+import VipsFilm1Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_1.webp";
+import VipsFilm2Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_2.webp";
+import VipsFilm3Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_3.webp";
+import VipsFilm4Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_4.webp";
+import YaleZuriDvcThumbnail from "@/assets/img/thumbnails/Yale_Zuri-DVC.webp";
 
 const StyledWorkSection = styled(Box)(({ theme }) => ({
   backgroundColor: "#000",
