@@ -180,7 +180,7 @@ export default function Header() {
             <StyledMenuLink hoverColor="#FF00FF" onClick={() => handleNavigation("/about")}>
               ABOUT US
             </StyledMenuLink>
-            <StyledMenuLink hoverColor="#FF00FF" onClick={() => handleNavigation("/")}>
+            <StyledMenuLink hoverColor="#FF00FF" onClick={() => handleNavigation("/showreel")}>
               SHOW REEL
             </StyledMenuLink>
             <StyledMenuLink hoverColor="#FF0000" onClick={() => handleNavigation("/contact")}>

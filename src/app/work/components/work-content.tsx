@@ -1,9 +1,29 @@
 "use client";
 
 import { styled } from "@mui/material/styles";
-import { Box, Typography } from "@mui/material";
-import { useState } from "react";
+import { Box, Typography, IconButton, Slider } from "@mui/material";
+import { useState, useRef, useEffect } from "react";
 import Header from "@/common/components/header";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
+import KRAJewellers1Thumbnail from "@/assets/img/thumbnails/KRA_Jewellers_1.png";
+import KRAJewellers2Thumbnail from "@/assets/img/thumbnails/KRA_Jewellers_2.png";
+import Kohinoor1Thumbnail from "@/assets/img/thumbnails/Kohinoor_1.png";
+import Kohinoor2Thumbnail from "@/assets/img/thumbnails/Kohinoor_2.png";
+import KRABridalCampaignThumbnail from "@/assets/img/thumbnails/KRA_jewellers-Bridal_campaign_Digital.png";
+import KraDailyDiamondsThumbnail from "@/assets/img/thumbnails/Kra Jewellers-Daily_Diamonds.png";
+import KraDiamondsDigitalThumbnail from "@/assets/img/thumbnails/Kra_jewellers-Diamonds_Digital_campaign.png";
+import SebamedDigitalAdThumbnail from "@/assets/img/thumbnails/Sebamed-digital_ad.png";
+import ShakuniFinalThumbnail from "@/assets/img/thumbnails/Shakuni_final.png";
+import VipsFilm1Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_1.png";
+import VipsFilm2Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_2.png";
+import VipsFilm3Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_3.png";
+import VipsFilm4Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_4.png";
+import YaleZuriDvcThumbnail from "@/assets/img/thumbnails/Yale_Zuri-DVC.png";
 
 const StyledWorkSection = styled(Box)(({ theme }) => ({
   backgroundColor: "#000",
@@ -66,13 +86,61 @@ const StyledWorkImageWrapper = styled(Box)({
   overflow: "hidden",
   aspectRatio: "16/9",
   marginBottom: "1rem",
+  backgroundColor: "#1a1a1a",
 });
 
-const StyledWorkImage = styled("img")({
+const StyledWorkThumbnail = styled("img")(({ theme }) => ({
   width: "100%",
   height: "100%",
   objectFit: "cover",
   display: "block",
+  position: "absolute",
+  top: 0,
+  left: 0,
+  zIndex: 1,
+}));
+
+const StyledWorkVideo = styled("video")(({ theme }) => ({
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  display: "block",
+  position: "absolute",
+  top: 0,
+  left: 0,
+  zIndex: 2,
+}));
+
+const PlayButtonOverlay = styled(Box)({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "rgba(0, 0, 0, 0.3)",
+  cursor: "pointer",
+  transition: "backgroundColor 0.3s ease",
+  zIndex: 3,
+});
+
+const PlayButton = styled(Box)({
+  width: "60px",
+  height: "60px",
+  borderRadius: "50%",
+  backgroundColor: "#fff",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  transition: "transform 0.3s ease",
+  "&:hover": {
+    transform: "scale(1.1)",
+  },
+  "& svg": {
+    marginLeft: "4px",
+  },
 });
 
 const StyledWorkCategory = styled(Typography)(({ theme }) => ({
@@ -87,80 +155,373 @@ const StyledWorkCategory = styled(Typography)(({ theme }) => ({
   },
 }));
 
+const VideoControlsWrapper = styled(Box)({
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  right: 0,
+  background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 70%, transparent 100%)",
+  padding: "2rem 1.5rem 1rem",
+  zIndex: 4,
+  opacity: 0,
+  transition: "opacity 0.3s ease",
+  "&.visible": {
+    opacity: 1,
+  },
+});
+
+const ControlsRow = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  gap: "0.75rem",
+});
+
+const StyledIconButton = styled(IconButton)({
+  color: "#fff",
+  padding: "8px",
+  "&:hover": {
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+  "& .MuiSvgIcon-root": {
+    fontSize: "1.5rem",
+  },
+});
+
+const ProgressBar = styled(Slider)({
+  color: "#fff",
+  height: 4,
+  padding: "8px 0",
+  marginBottom: "0.5rem",
+  "& .MuiSlider-thumb": {
+    width: 12,
+    height: 12,
+    backgroundColor: "#fff",
+    "&:hover, &.Mui-focusVisible": {
+      boxShadow: "0 0 0 8px rgba(255,255,255,0.16)",
+    },
+  },
+  "& .MuiSlider-track": {
+    border: "none",
+    height: 4,
+  },
+  "& .MuiSlider-rail": {
+    opacity: 0.3,
+    backgroundColor: "#fff",
+    height: 4,
+  },
+});
+
+const VolumeSlider = styled(Slider)({
+  color: "#fff",
+  width: 80,
+  height: 4,
+  "& .MuiSlider-thumb": {
+    width: 10,
+    height: 10,
+    backgroundColor: "#fff",
+    "&:hover, &.Mui-focusVisible": {
+      boxShadow: "0 0 0 6px rgba(255,255,255,0.16)",
+    },
+  },
+  "& .MuiSlider-track": {
+    border: "none",
+    height: 4,
+  },
+  "& .MuiSlider-rail": {
+    opacity: 0.3,
+    backgroundColor: "#fff",
+    height: 4,
+  },
+});
+
+const TimeDisplay = styled(Typography)({
+  color: "#fff",
+  fontSize: "0.875rem",
+  fontFamily: "monospace",
+  minWidth: "90px",
+  userSelect: "none",
+});
+
 const workItems = [
   {
     id: 1,
     label: "Hausla hai toh hojayega.",
-    category: "TVC / LINE PRODUCTION / KOTAK",
-    imageSrc:
-      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80",
+    category: " TVC x Shriya Pilgaonkar x  KRA Jewellers",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/I'm%20Ready%20-%20KRA.mp4",
+    thumbnail: KRAJewellers1Thumbnail,
   },
   {
     id: 2,
     label: "Fortune Teller",
-    category: "CAMPAIGN / VIPS FORTUNE TELLER",
-    imageSrc:
-      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80",
+    category: "TVC x Sai Tamhankar x Kohinoor",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Kohinoor4k.mp4",
+    thumbnail: Kohinoor1Thumbnail,
   },
   {
     id: 3,
     label: "Brand Campaign",
-    category: "TVC / COMMERCIAL / BRAND",
-    imageSrc:
-      "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80",
+    category: "TVC x Sai Tamhankar x Kohinoor",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Kohinoor_Kidnap_Preview.mp4",
+    thumbnail: Kohinoor2Thumbnail,
   },
-  {
+    {
     id: 4,
-    label: "Creative Direction",
-    category: "CAMPAIGN / CREATIVE STUDIO",
-    imageSrc:
-      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&q=80",
+    label: "Brand Film",
+    category: "Shriya Pilgaonkar x KRA jewellers",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Kra%20x%20Shriya%20x%20Beep.mp4",
+    thumbnail: KRAJewellers2Thumbnail,
   },
   {
     id: 5,
-    label: "Product Launch",
-    category: "TVC / LINE PRODUCTION / TECH",
-    imageSrc:
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80",
+    label: "Creative Direction",
+    category: "Sebamed x digital ad",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Pehli%20Diwali.mp4",
+    thumbnail: SebamedDigitalAdThumbnail,
   },
   {
     id: 6,
-    label: "Visual Story",
-    category: "CAMPAIGN / MEDIA HOUSE",
-    imageSrc:
-      "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&q=80",
+    label: "Product Launch",
+    category: "Yale Zuri x DVC",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/ZURI%20Final%20Output%20LONG%204K%20(1).mp4",
+    thumbnail: YaleZuriDvcThumbnail,
   },
   {
     id: 7,
-    label: "Brand Identity",
-    category: "TVC / COMMERCIAL / LIFESTYLE",
-    imageSrc:
-      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80",
+    label: "Visual Story",
+    category: "Bridal campaign Digital  x KRA jewellers",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Customization_Dir_Preview.mp4",
+    thumbnail: KRABridalCampaignThumbnail,
   },
   {
     id: 8,
-    label: "Digital Campaign",
-    category: "CAMPAIGN / SOCIAL MEDIA",
-    imageSrc:
-      "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80",
+    label: "Special Discount", 
+    category: "Diamonds Digital campaign x Kra jewellers",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Specialdiscount.mp4",
+    thumbnail: KraDiamondsDigitalThumbnail,
   },
   {
     id: 9,
-    label: "Documentary",
-    category: "TVC / LINE PRODUCTION / FILM",
-    imageSrc:
-      "https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?w=800&q=80",
+    label: "Brand Campaign",
+    category: "Ganpati festive x Kra jewellers",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Kohinoor4k.mp4",
+    thumbnail: KRAJewellers1Thumbnail,
   },
   {
     id: 10,
-    label: "Fashion Film",
-    category: "CAMPAIGN / FASHION / EDITORIAL",
-    imageSrc:
-      "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80",
+    label: "Festive Collection",
+    category: "Daily Diamonds x Kra Jewellers",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/9to5Diamond_DirPreview_1809.mp4",
+    thumbnail: KraDailyDiamondsThumbnail,
   },
+  {
+    id: 11,
+    label: "Brand Film",
+    category: "VIPS digital campaign Film 2",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Fortune%20Teller_Final-2.mp4",
+    thumbnail: VipsFilm2Thumbnail,
+  },
+  {
+    id: 12,
+    label: "Brand Film",
+    category: "VIPS digital campaign Film 1",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Saved%20by%20the%20wallet.mp4",
+    thumbnail: VipsFilm1Thumbnail,
+  },
+  {
+    id: 13,
+    label: "Product Launch",
+    category: "VIPS digital campaign Film 3",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/DIWALI%20finstock.mp4",
+    thumbnail: VipsFilm3Thumbnail, 
+  },
+  {
+    id: 14,
+    label: "Brand Campaign",
+    category: "VIPS digital campaign Film 4",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Cashback%20is%20a%20habit%20VIPS%20WALLET.mp4",
+    thumbnail: VipsFilm4Thumbnail,
+  },
+  {
+    id: 15,
+    label: "Festive Collection",
+    category: "No name provided", //name was not provided
+     videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/ShakuniFinal.mp4",
+    thumbnail: ShakuniFinalThumbnail,
+  }
 ];
 
 export default function WorkContent() {
+  const [playingId, setPlayingId] = useState<number | null>(null);
+  const [controlsVisible, setControlsVisible] = useState<{ [key: number]: boolean }>({});
+  const [isPlaying, setIsPlaying] = useState<{ [key: number]: boolean }>({});
+  const [currentTime, setCurrentTime] = useState<{ [key: number]: number }>({});
+  const [duration, setDuration] = useState<{ [key: number]: number }>({});
+  const [volume, setVolume] = useState<{ [key: number]: number }>({});
+  const [isMuted, setIsMuted] = useState<{ [key: number]: boolean }>({});
+  const [isFullscreen, setIsFullscreen] = useState<{ [key: number]: boolean }>({});
+  const videoRefs = useRef<Record<number, HTMLVideoElement | null>>({});
+  const wrapperRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const hideControlsTimeoutRef = useRef<Record<number, NodeJS.Timeout | null>>({});
+
+  const formatTime = (seconds: number) => {
+    if (!seconds || isNaN(seconds)) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const handlePlayPause = (id: number) => {
+    const video = videoRefs.current[id];
+    if (!video) return;
+
+    if (video.paused) {
+      video.play();
+      setIsPlaying((prev) => ({ ...prev, [id]: true }));
+    } else {
+      video.pause();
+      setIsPlaying((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
+  const handleProgressChange = (id: number, value: number) => {
+    const video = videoRefs.current[id];
+    if (!video) return;
+    video.currentTime = value;
+    setCurrentTime((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleVolumeChange = (id: number, value: number) => {
+    const video = videoRefs.current[id];
+    if (!video) return;
+    video.volume = value;
+    setVolume((prev) => ({ ...prev, [id]: value }));
+    setIsMuted((prev) => ({ ...prev, [id]: value === 0 }));
+  };
+
+  const handleMuteToggle = (id: number) => {
+    const video = videoRefs.current[id];
+    if (!video) return;
+    
+    if (video.muted || video.volume === 0) {
+      video.muted = false;
+      video.volume = volume[id] || 0.5;
+      setIsMuted((prev) => ({ ...prev, [id]: false }));
+    } else {
+      video.muted = true;
+      setIsMuted((prev) => ({ ...prev, [id]: true }));
+    }
+  };
+
+  const handleFullscreenToggle = (id: number) => {
+    const wrapper = wrapperRefs.current[id];
+    if (!wrapper) return;
+
+    if (!document.fullscreenElement) {
+      wrapper.requestFullscreen();
+      setIsFullscreen((prev) => ({ ...prev, [id]: true }));
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
+  const showControls = (id: number) => {
+    setControlsVisible((prev) => ({ ...prev, [id]: true }));
+    
+    if (hideControlsTimeoutRef.current[id]) {
+      clearTimeout(hideControlsTimeoutRef.current[id]!);
+    }
+
+    if (isPlaying[id]) {
+      hideControlsTimeoutRef.current[id] = setTimeout(() => {
+        setControlsVisible((prev) => ({ ...prev, [id]: false }));
+      }, 3000);
+    }
+  };
+
+  const handleVideoClick = (id: number) => {
+    if (playingId === id) {
+      handlePlayPause(id);
+    } else {
+      setPlayingId(id);
+    }
+  };
+
+  useEffect(() => {
+    if (playingId) {
+      const videoElement = videoRefs.current[playingId];
+      if (videoElement) {
+        videoElement.play().catch((err) => console.error("Play failed:", err));
+        setIsPlaying((prev) => ({ ...prev, [playingId]: true }));
+        
+        // Initialize volume if not set
+        if (volume[playingId] === undefined) {
+          setVolume((prev) => ({ ...prev, [playingId]: 1 }));
+        }
+      }
+    } else {
+      Object.values(videoRefs.current).forEach((video) => {
+        if (video) {
+          video.pause();
+        }
+      });
+    }
+  }, [playingId]);
+
+  useEffect(() => {
+    const videos = videoRefs.current;
+    
+    const handleTimeUpdate = (id: number) => (e: Event) => {
+      const video = e.target as HTMLVideoElement;
+      setCurrentTime((prev) => ({ ...prev, [id]: video.currentTime }));
+    };
+
+    const handleLoadedMetadata = (id: number) => (e: Event) => {
+      const video = e.target as HTMLVideoElement;
+      setDuration((prev) => ({ ...prev, [id]: video.duration }));
+    };
+
+    const handleEnded = (id: number) => () => {
+      setPlayingId(null);
+      setIsPlaying((prev) => ({ ...prev, [id]: false }));
+    };
+
+    Object.entries(videos).forEach(([idStr, video]) => {
+      const id = parseInt(idStr);
+      if (video) {
+        video.addEventListener("timeupdate", handleTimeUpdate(id));
+        video.addEventListener("loadedmetadata", handleLoadedMetadata(id));
+        video.addEventListener("ended", handleEnded(id));
+      }
+    });
+
+    return () => {
+      Object.entries(videos).forEach(([idStr, video]) => {
+        const id = parseInt(idStr);
+        if (video) {
+          video.removeEventListener("timeupdate", handleTimeUpdate(id));
+          video.removeEventListener("loadedmetadata", handleLoadedMetadata(id));
+          video.removeEventListener("ended", handleEnded(id));
+        }
+      });
+    };
+  }, []);
+
   return (
     <>
       <Header />
@@ -170,8 +531,107 @@ export default function WorkContent() {
           <StyledWorkGrid>
             {workItems.map((work) => (
               <StyledWorkCard key={work.id}>
-                <StyledWorkImageWrapper>
-                  <StyledWorkImage src={work.imageSrc} alt={work.label} />
+                <StyledWorkImageWrapper
+                  ref={(el: HTMLDivElement | null) => {
+                    if (el) wrapperRefs.current[work.id] = el;
+                  }}
+                  onMouseEnter={() => showControls(work.id)}
+                  onMouseMove={() => showControls(work.id)}
+                  onMouseLeave={() => {
+                    if (hideControlsTimeoutRef.current[work.id]) {
+                      clearTimeout(hideControlsTimeoutRef.current[work.id]!);
+                    }
+                    if (isPlaying[work.id]) {
+                      setControlsVisible((prev) => ({ ...prev, [work.id]: false }));
+                    }
+                  }}
+                >
+                  <StyledWorkThumbnail
+                    src={work.thumbnail.src}
+                    alt={work.label}
+                    style={{
+                      opacity: playingId === work.id ? 0 : 1,
+                      transition: "opacity 0.3s ease",
+                    }}
+                  />
+                  <StyledWorkVideo
+                    ref={(el) => {
+                      if (el) videoRefs.current[work.id] = el;
+                    }}
+                    src={work.videoSrc}
+                    preload="metadata"
+                    controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
+                    disablePictureInPicture
+                    onClick={() => handleVideoClick(work.id)}
+                    style={{
+                      opacity: playingId === work.id ? 1 : 0,
+                      pointerEvents: playingId === work.id ? "auto" : "none",
+                      transition: "opacity 0.3s ease",
+                      cursor: playingId === work.id ? "pointer" : "default",
+                    }}
+                  />
+                  {playingId !== work.id && (
+                    <PlayButtonOverlay onClick={() => setPlayingId(work.id)}>
+                      <PlayButton>
+                        <svg width="50px" height="50px" viewBox="-7.44 -7.44 38.88 38.88" xmlns="http://www.w3.org/2000/svg" fill="#000000" transform="rotate(0)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="1.248"></g><g id="SVGRepo_iconCarrier"> <path fill="none" stroke="#000000" stroke-width="2.4" d="M3,22.0000002 L21,12 L3,2 L3,22.0000002 Z M5,19 L17.5999998,11.9999999 L5,5 L5,19 Z M7,16 L14.1999999,12 L7,8 L7,16 Z M9,13 L10.8,12 L9,11 L9,13 Z"></path> </g></svg>
+                      </PlayButton>
+                    </PlayButtonOverlay>
+                  )}
+                  {playingId === work.id && (
+                    <VideoControlsWrapper className={controlsVisible[work.id] ? "visible" : ""}>
+                      <ProgressBar
+                        value={currentTime[work.id] || 0}
+                        max={duration[work.id] || 100}
+                        onChange={(_, value) => handleProgressChange(work.id, value as number)}
+                        aria-label="Video progress"
+                      />
+                      <ControlsRow>
+                        <StyledIconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePlayPause(work.id);
+                          }}
+                          aria-label={isPlaying[work.id] ? "Pause" : "Play"}
+                        >
+                          {isPlaying[work.id] ? <PauseIcon /> : <PlayArrowIcon />}
+                        </StyledIconButton>
+
+                        <TimeDisplay>
+                          {formatTime(currentTime[work.id] || 0)} / {formatTime(duration[work.id] || 0)}
+                        </TimeDisplay>
+
+                        <Box sx={{ flex: 1 }} />
+
+                        <StyledIconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMuteToggle(work.id);
+                          }}
+                          aria-label={isMuted[work.id] ? "Unmute" : "Mute"}
+                        >
+                          {isMuted[work.id] || volume[work.id] === 0 ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                        </StyledIconButton>
+
+                        {/* <VolumeSlider
+                          value={isMuted[work.id] ? 0 : (volume[work.id] ?? 1)}
+                          max={1}
+                          step={0.01}
+                          onChange={(_, value) => handleVolumeChange(work.id, value as number)}
+                          aria-label="Volume"
+                        /> */}
+
+                        <StyledIconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleFullscreenToggle(work.id);
+                          }}
+                          aria-label={isFullscreen[work.id] ? "Exit fullscreen" : "Fullscreen"}
+                        >
+                          {isFullscreen[work.id] ? <FullscreenExitIcon /> : <FullscreenIcon />}
+                        </StyledIconButton>
+                      </ControlsRow>
+                    </VideoControlsWrapper>
+                  )}
                 </StyledWorkImageWrapper>
                 <StyledWorkCategory>{work.category}</StyledWorkCategory>
               </StyledWorkCard>

@@ -13,10 +13,12 @@ import Logo4 from "@/assets/img/company-logos/image copy 3.png";
 import Logo5 from "@/assets/img/company-logos/image copy 4.png";
 import Logo6 from "@/assets/img/company-logos/image copy 5.png";
 import Logo7 from "@/assets/img/company-logos/yale.png";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { TouchEvent, PointerEvent } from "react";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 
 const StyledHeroSection = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -28,11 +30,11 @@ const StyledHeroSection = styled(Box)(({ theme }) => ({
   alignItems: "stretch",
   padding: "0 1.25rem",
   [theme.breakpoints.down("sm")]: {
-    minHeight: "70vh",
+    minHeight: "70vh"
   },
   [theme.breakpoints.up("md")]: {
-    padding: "0 3rem",
-  },
+    padding: "0 3rem"
+  }
 }));
 
 const StyledVideoBackground = styled("video")({
@@ -42,7 +44,7 @@ const StyledVideoBackground = styled("video")({
   height: "100%",
   objectFit: "cover",
   display: "block",
-  backgroundColor: "#000",
+  backgroundColor: "#000"
 });
 
 const StyledVideoOverlay = styled(Box)({
@@ -51,8 +53,9 @@ const StyledVideoOverlay = styled(Box)({
   left: 0,
   right: 0,
   bottom: 0,
-  background: "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.65) 100%)",
-  pointerEvents: "none",
+  background:
+    "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.65) 100%)",
+  pointerEvents: "none"
 });
 
 const StyledHeroInner = styled(Box)(({ theme }) => ({
@@ -67,8 +70,8 @@ const StyledHeroInner = styled(Box)(({ theme }) => ({
   paddingBottom: "3rem",
   zIndex: 1,
   [theme.breakpoints.down("md")]: {
-    paddingBottom: "2rem",
-  },
+    paddingBottom: "2rem"
+  }
 }));
 
 const StyledContentWrapper = styled(Box)(({ theme }) => ({
@@ -86,14 +89,14 @@ const StyledContentWrapper = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     gap: "1rem",
     padding: "0.75rem 1rem",
-    bottom: "1.5rem",
-  },
+    bottom: "1.5rem"
+  }
 }));
 
 const StyledTextContainer = styled(Box)({
   display: "flex",
   flexDirection: "column",
-  lineHeight: 0.9,
+  lineHeight: 0.9
 });
 
 const StyledHeroTitle = styled(Typography)<TypographyProps>(({ theme }) => ({
@@ -103,14 +106,14 @@ const StyledHeroTitle = styled(Typography)<TypographyProps>(({ theme }) => ({
   color: "#fff",
   textTransform: "uppercase",
   [theme.breakpoints.up("md")]: {
-    fontSize: "3.25rem",
+    fontSize: "3.25rem"
   },
   [theme.breakpoints.up("lg")]: {
-    fontSize: "3.75rem",
+    fontSize: "3.75rem"
   },
   [theme.breakpoints.down("sm")]: {
-    fontSize: "2.25rem",
-  },
+    fontSize: "2.25rem"
+  }
 }));
 
 const StyledHeroSubtitle = styled(Typography)<TypographyProps>(({ theme }) => ({
@@ -121,18 +124,17 @@ const StyledHeroSubtitle = styled(Typography)<TypographyProps>(({ theme }) => ({
   marginTop: "0.5rem",
   textTransform: "uppercase",
   [theme.breakpoints.up("md")]: {
-    fontSize: "1.125rem",
-  },
+    fontSize: "1.125rem"
+  }
 }));
 
 const StyledRecentsSection = styled(Box)(({ theme }) => ({
   backgroundColor: "#000",
   padding: "1rem 0 2rem",
   [theme.breakpoints.down("sm")]: {
-    padding: "1rem 0 1.5rem",
-  },
+    padding: "1rem 0 1.5rem"
+  }
 }));
-
 
 const StyledCarouselContainer = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -146,8 +148,8 @@ const StyledCarouselContainer = styled(Box)(({ theme }) => ({
   width: "100%",
   padding: "0 1.5rem",
   [theme.breakpoints.up("md")]: {
-    padding: "0 3rem",
-  },
+    padding: "0 3rem"
+  }
 }));
 
 const StyledCarouselWrapper = styled(Box)({
@@ -159,7 +161,7 @@ const StyledCarouselWrapper = styled(Box)({
   alignItems: "center",
   width: "100%",
   maxWidth: "100%",
-  margin: "0 auto",
+  margin: "0 auto"
 });
 
 const StyledCarouselTrack = styled(Box)<{
@@ -174,8 +176,10 @@ const StyledCarouselTrack = styled(Box)<{
   userSelect: "none",
   touchAction: "pan-y",
   cursor: isDragging ? "grabbing" : "grab",
-  transition: transitionEnabled ? "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)" : "none",
-  transform: `translateX(-${currentIndex * 100}%)`,
+  transition: transitionEnabled
+    ? "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)"
+    : "none",
+  transform: `translateX(-${currentIndex * 100}%)`
 }));
 
 const StyledVideoCard = styled(Box)(({ theme }) => ({
@@ -194,22 +198,22 @@ const StyledVideoCard = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     minWidth: "100%",
     height: "auto",
-    aspectRatio: "16/9",
-  },
+    aspectRatio: "16/9"
+  }
 }));
 
 const StyledImageWrapper = styled(Box)(({ theme }) => ({
   position: "relative",
   width: "100%",
   height: "100%",
-  overflow: "hidden",
+  overflow: "hidden"
 }));
 
 const StyledCardImage = styled("img")({
   width: "100%",
   height: "100%",
   objectFit: "cover",
-  display: "block",
+  display: "block"
 });
 
 const StyledCardOverlay = styled(Box)({
@@ -219,7 +223,7 @@ const StyledCardOverlay = styled(Box)({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  transition: "background 0.3s ease",
+  transition: "background 0.3s ease"
 });
 
 const StyledPlayIcon = styled("img")({
@@ -227,7 +231,7 @@ const StyledPlayIcon = styled("img")({
   height: "80px",
   opacity: 0,
   transition: "opacity 0.3s ease",
-  pointerEvents: "none",
+  pointerEvents: "none"
 });
 
 const StyledTextContent = styled(Box)(({ theme }) => ({
@@ -236,13 +240,14 @@ const StyledTextContent = styled(Box)(({ theme }) => ({
   left: 0,
   width: "100%",
   padding: "3rem 2rem",
-  background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%)",
+  background:
+    "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%)",
   zIndex: 2,
   display: "flex",
   justifyContent: "flex-end",
   [theme.breakpoints.down("sm")]: {
-    padding: "2rem 1.5rem",
-  },
+    padding: "2rem 1.5rem"
+  }
 }));
 
 const StyledCardSubtitle = styled(Typography)(({ theme }) => ({
@@ -254,24 +259,24 @@ const StyledCardSubtitle = styled(Typography)(({ theme }) => ({
   fontFamily: "var(--font-koulen), sans-serif",
   textAlign: "right",
   [theme.breakpoints.down("sm")]: {
-    fontSize: "1rem",
-  },
+    fontSize: "1rem"
+  }
 }));
 
 const StyledNavButton = styled(IconButton)(({ theme }) => ({
   backgroundColor: "rgba(255, 255, 255, 0.1)",
   color: "#fff",
   "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(255, 255, 255, 0.2)"
   },
   "&:disabled": {
-    opacity: 0.3,
+    opacity: 0.3
   },
   [theme.breakpoints.down("md")]: {
     width: "46px",
     height: "46px",
-    fontSize: "1rem",
-  },
+    fontSize: "1rem"
+  }
 }));
 
 const StyledDesktopNavRail = styled(Box)(({ theme }) => ({
@@ -283,8 +288,8 @@ const StyledDesktopNavRail = styled(Box)(({ theme }) => ({
   padding: "0 0.75rem",
   pointerEvents: "none",
   [theme.breakpoints.up("md")]: {
-    display: "flex",
-  },
+    display: "flex"
+  }
 }));
 
 const StyledMobileNav = styled(Box)(({ theme }) => ({
@@ -293,14 +298,14 @@ const StyledMobileNav = styled(Box)(({ theme }) => ({
   gap: "0.75rem",
   marginTop: "1rem",
   [theme.breakpoints.up("md")]: {
-    display: "none",
-  },
+    display: "none"
+  }
 }));
 
 const StyledBrandsContainer = styled(Box)({
   position: "relative",
   maxWidth: "1200px",
-  margin: "0 auto",
+  margin: "0 auto"
 });
 
 const StyledRecentsTitle = styled(Typography)(({ theme }) => ({
@@ -316,8 +321,8 @@ const StyledRecentsTitle = styled(Typography)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     fontSize: "1.75rem",
     paddingLeft: "1.25rem",
-    marginBottom: "1.5rem",
-  },
+    marginBottom: "1.5rem"
+  }
 }));
 
 const StyledBrandsTitle = styled(Typography)(({ theme }) => ({
@@ -334,8 +339,8 @@ const StyledBrandsTitle = styled(Typography)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     fontSize: "1.25rem",
     paddingLeft: "1.25rem",
-    marginTop: "4rem",
-  },
+    marginTop: "4rem"
+  }
 }));
 
 const StyledBrandsScroller = styled(Box)({
@@ -350,16 +355,16 @@ const StyledBrandsScroller = styled(Box)({
     top: 0,
     width: "100px",
     height: "100%",
-    zIndex: 2,
+    zIndex: 2
   },
   "&::before": {
     left: 0,
-    background: "linear-gradient(to right, #000 0%, transparent 100%)",
+    background: "linear-gradient(to right, #000 0%, transparent 100%)"
   },
   "&::after": {
     right: 0,
-    background: "linear-gradient(to left, #000 0%, transparent 100%)",
-  },
+    background: "linear-gradient(to left, #000 0%, transparent 100%)"
+  }
 });
 
 const StyledBrandsTrack = styled(Box)({
@@ -368,15 +373,15 @@ const StyledBrandsTrack = styled(Box)({
   animation: "scroll 14s linear infinite",
   "@keyframes scroll": {
     "0%": {
-      transform: "translateX(0)",
+      transform: "translateX(0)"
     },
     "100%": {
-      transform: "translateX(-50%)",
-    },
+      transform: "translateX(-50%)"
+    }
   },
   "&:hover": {
-    animationPlayState: "paused",
-  },
+    animationPlayState: "paused"
+  }
 });
 
 const StyledBrandLogo = styled(Box)({
@@ -390,8 +395,8 @@ const StyledBrandLogo = styled(Box)({
   "& img": {
     maxWidth: "100%",
     maxHeight: "100%",
-    objectFit: "contain",
-  },
+    objectFit: "contain"
+  }
 });
 
 const recentVideos = [
@@ -400,33 +405,17 @@ const recentVideos = [
     title: "Jab Judenge tabhi toh Udenge",
     subtitle: "LINE PRODUCTION | SHRIRAM FINANCE",
     brand: "SHRIRAM",
-    imageSrc:
-      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80",
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/ZURI%20Final%20Output%20LONG%204K%20(1).mp4"
   },
   {
     id: 2,
     title: "Creative Excellence",
     subtitle: "BRAND CAMPAIGN | CREATIVE STUDIO",
     brand: "BRAND",
-    imageSrc:
-      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80",
-  },
-  {
-    id: 3,
-    title: "Visual Storytelling",
-    subtitle: "PRODUCTION | MEDIA HOUSE",
-    brand: "MEDIA",
-    imageSrc:
-      "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80",
-  },
-  {
-    id: 4,
-    title: "Commercial Project",
-    subtitle: "DIRECTION | FILM STUDIO",
-    brand: "STUDIO",
-    imageSrc:
-      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&q=80",
-  },
+    videoSrc:
+      "https://static.kleemservices.com/beepfilms/videos/Specialdiscount.mp4"
+  }
 ];
 
 const brandLogos = [
@@ -436,31 +425,67 @@ const brandLogos = [
   { id: 4, name: "Brand 4", src: Logo4.src },
   { id: 5, name: "Brand 5", src: Logo5.src },
   { id: 6, name: "Brand 6", src: Logo6.src },
-  { id: 7, name: "Yale", src: Logo7.src },
+  { id: 7, name: "Yale", src: Logo7.src }
 ];
 
 const extendedVideos = [
   recentVideos[recentVideos.length - 1],
   ...recentVideos,
-  recentVideos[0],
+  recentVideos[0]
 ];
 const realSlideCount = recentVideos.length;
 
 export default function Hero() {
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [transitionEnabled, setTransitionEnabled] = useState(true);
   const [dragStartX, setDragStartX] = useState<number | null>(null);
   const [dragCurrentX, setDragCurrentX] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [pointerId, setPointerId] = useState<number | null>(null);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTransitionEnabled(true);
-      setCurrentIndex((prev) => prev + 1);
+      if (!isVideoPlaying) {
+        setTransitionEnabled(true);
+        setCurrentIndex((prev) => prev + 1);
+      }
     }, 5000);
 
     return () => clearInterval(interval);
+  }, [isVideoPlaying]);
+
+  // Auto-unmute after 0.3s delay for audio autoplay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMuted(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Intersection Observer for pause/play based on visibility
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {
+            // Autoplay might be blocked, that's okay
+          });
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -520,6 +545,14 @@ export default function Hero() {
     setIsDragging(false);
   };
 
+  const handleVideoPlay = () => {
+    setIsVideoPlaying(true);
+  };
+
+  const handleVideoPause = () => {
+    setIsVideoPlaying(false);
+  };
+
   const handleTouchStart = (e: TouchEvent) => {
     updateDrag(e.targetTouches[0].clientX);
   };
@@ -535,7 +568,10 @@ export default function Hero() {
   const handlePointerDown = (e: PointerEvent) => {
     if (e.pointerId !== undefined) {
       setPointerId(e.pointerId);
-      if (e.currentTarget && (e.currentTarget as HTMLElement).setPointerCapture) {
+      if (
+        e.currentTarget &&
+        (e.currentTarget as HTMLElement).setPointerCapture
+      ) {
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
       }
     }
@@ -571,16 +607,34 @@ export default function Hero() {
       <StyledHeroSection>
         {/* Background Video */}
         <StyledVideoBackground
+          ref={heroVideoRef}
           autoPlay
+          muted={isMuted}
           loop
-          muted
           playsInline
           poster={HeroCover.src}
         >
-          <source src="/videos/hero-video.mp4" type="video/mp4" />
+          <source
+            src="https://static.kleemservices.com/beepfilms/videos/BEEP%20SHOWREEL%20HD.mp4"
+            type="video/mp4"
+          />
         </StyledVideoBackground>
 
         <StyledVideoOverlay />
+
+        {/* Mute Toggle Button */}
+        <StyledNavButton
+          onClick={() => setIsMuted(!isMuted)}
+          sx={{
+            position: "absolute",
+            bottom: "2rem",
+            right: "2rem",
+            zIndex: 10
+          }}
+          aria-label={isMuted ? "Unmute video" : "Mute video"}
+        >
+          {isMuted ? <VolumeOffIcon /> : <VolumeUpIcon />}
+        </StyledNavButton>
 
         <StyledHeroInner>
           <StyledContentWrapper>
@@ -590,12 +644,16 @@ export default function Hero() {
               alt="Beep Films animated logo"
               sx={{
                 height: { xs: "64px", sm: "80px", md: "96px" },
-                width: "auto",
+                width: "auto"
               }}
             />
             <StyledTextContainer>
-              <StyledHeroTitle component="h1">Crafting Stories That Move</StyledHeroTitle>
-              <StyledHeroSubtitle component="p">Films, spots, and stories across mediums</StyledHeroSubtitle>
+              <StyledHeroTitle component="h1">
+                Crafting Stories That Move
+              </StyledHeroTitle>
+              <StyledHeroSubtitle component="p">
+                Films, spots, and stories across mediums
+              </StyledHeroSubtitle>
             </StyledTextContainer>
           </StyledContentWrapper>
         </StyledHeroInner>
@@ -604,10 +662,9 @@ export default function Hero() {
       {/* Recents Section */}
       <StyledRecentsSection>
         <StyledCarouselContainer>
-
           <StyledCarouselWrapper>
             <StyledRecentsTitle>RECENTS</StyledRecentsTitle>
-            <StyledCarouselTrack 
+            <StyledCarouselTrack
               currentIndex={currentIndex}
               transitionEnabled={transitionEnabled}
               isDragging={isDragging}
@@ -626,32 +683,35 @@ export default function Hero() {
                   key={`${video.id}-${index}`}
                   sx={{
                     "&:hover .play-icon": {
-                      opacity: 1,
+                      opacity: 1
                     },
                     "&:hover .card-overlay": {
-                      background: "rgba(0, 0, 0, 0.5)",
-                    },
+                      background: "rgba(0, 0, 0, 0.5)"
+                    }
                   }}
                 >
                   <StyledImageWrapper>
-                    <StyledCardImage src={video.imageSrc} alt={video.title} />
-
-                    <StyledCardOverlay className="card-overlay">
-                      <StyledPlayIcon
-                        className="play-icon"
-                        src={PlayIcon.src}
-                        alt="Play"
+                    <StyledVideoBackground
+                      controls
+                      playsInline
+                      onPlay={handleVideoPlay}
+                      onPause={handleVideoPause}
+                    >
+                      {/* <source src="https://static.kleemservices.com/beepfilms/videos/9to5Diamond_DirPreview_1809.mp4" type="video/mp4" /> */}
+                      <source
+                        src={video.videoSrc}
+                        type="video/mp4"
                       />
-                    </StyledCardOverlay>
+                    </StyledVideoBackground>
 
-                    <StyledTextContent>
+                    {/* <StyledTextContent>
                       <StyledCardSubtitle>{video.subtitle}</StyledCardSubtitle>
-                    </StyledTextContent>
+                    </StyledTextContent> */}
                   </StyledImageWrapper>
                 </StyledVideoCard>
               ))}
             </StyledCarouselTrack>
-          
+
             <StyledBrandsTitle>BRAND COLLABORATIONS</StyledBrandsTitle>
             <StyledBrandsScroller>
               <StyledBrandsTrack>
