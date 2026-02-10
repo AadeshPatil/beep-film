@@ -3,7 +3,9 @@
 import { styled } from "@mui/material/styles";
 import { Box, Typography, IconButton, Slider } from "@mui/material";
 import { useState, useRef, useEffect } from "react";
+import Hls from "hls.js";
 import Header from "@/common/components/header";
+import { getStreamUrl, getThumbnailUrl } from "@/common/utils";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
@@ -242,125 +244,149 @@ const TimeDisplay = styled(Typography)({
   userSelect: "none",
 });
 
+const QualityButton = styled(IconButton)({
+  color: "#fff",
+  padding: "8px",
+  fontSize: "0.75rem",
+  minWidth: "45px",
+  height: "32px",
+  border: "1px solid rgba(255,255,255,0.3)",
+  borderRadius: "4px",
+  "&:hover": {
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+});
+
+const QualityMenu = styled(Box)({
+  position: "absolute",
+  bottom: "100%",
+  right: "1rem",
+  backgroundColor: "rgba(0, 0, 0, 0.95)",
+  borderRadius: "4px",
+  overflow: "hidden",
+  marginBottom: "0.5rem",
+  minWidth: "120px",
+  zIndex: 10,
+});
+
+const QualityOption = styled(Box)<{ isActive: boolean }>(({ isActive }) => ({
+  padding: "0.75rem 1rem",
+  color: "#fff",
+  cursor: "pointer",
+  backgroundColor: isActive ? "rgba(255,255,255,0.2)" : "transparent",
+  fontWeight: isActive ? 600 : 400,
+  fontSize: "0.875rem",
+  "&:hover": {
+    backgroundColor: "rgba(255,255,255,0.15)",
+  },
+  transition: "background-color 0.2s ease",
+}));
+
+// TODO: Replace these placeholder IDs with your actual Cloudflare Stream video UIDs
 const workItems = [
   {
     id: 1,
     label: "Hausla hai toh hojayega.",
     category: " TVC x Shriya Pilgaonkar x  KRA Jewellers",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/I'm%20Ready%20-%20KRA.mp4",
-    thumbnail: KRAJewellers1Thumbnail,
+    cloudflareVideoId: "66cd87d31d8c6b991b8dfdb1a7833439", // Replace with actual Cloudflare video ID
+    thumbnail: KRAJewellers1Thumbnail, // Fallback - will use Cloudflare thumbnail
   },
   {
     id: 2,
     label: "Fortune Teller",
     category: "TVC x Sai Tamhankar x Kohinoor",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Kohinoor4k.mp4",
+    cloudflareVideoId: "96cc0ba1195720c43e010328c9cb0d75",
     thumbnail: Kohinoor1Thumbnail,
   },
   {
     id: 3,
     label: "Brand Campaign",
     category: "TVC x Sai Tamhankar x Kohinoor",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Kohinoor_Kidnap_Preview.mp4",
+    cloudflareVideoId: "d541fa1d8b3bfffe854707ba97f4bc58",
     thumbnail: Kohinoor2Thumbnail,
   },
-    {
+  {
     id: 4,
     label: "Brand Film",
     category: "Shriya Pilgaonkar x KRA jewellers",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Kra%20x%20Shriya%20x%20Beep.mp4",
+    cloudflareVideoId: "420a7f94914bcd646a729b12e7502bde",
     thumbnail: KRAJewellers2Thumbnail,
   },
   {
     id: 5,
     label: "Creative Direction",
     category: "Sebamed x digital ad",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Pehli%20Diwali.mp4",
+    cloudflareVideoId: "52b15c1c08e2c4bdfbd69b65127015ac",
     thumbnail: SebamedDigitalAdThumbnail,
   },
   {
     id: 6,
     label: "Product Launch",
     category: "Yale Zuri x DVC",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/ZURI%20Final%20Output%20LONG%204K%20(1).mp4",
+    cloudflareVideoId: "a0426a2933d41fd2351c0a16269afd7a",
     thumbnail: YaleZuriDvcThumbnail,
   },
   {
     id: 7,
     label: "Visual Story",
     category: "Bridal campaign Digital  x KRA jewellers",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Customization_Dir_Preview.mp4",
+    cloudflareVideoId: "442a2eb9688b579530f92224f613123a",
     thumbnail: KRABridalCampaignThumbnail,
   },
   {
     id: 8,
-    label: "Special Discount", 
+    label: "Special Discount",
     category: "Diamonds Digital campaign x Kra jewellers",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Specialdiscount.mp4",
+    cloudflareVideoId: "617906039894457634da39f8529d6e1c",
     thumbnail: KraDiamondsDigitalThumbnail,
   },
   {
     id: 9,
     label: "Brand Campaign",
     category: "Ganpati festive x Kra jewellers",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Kohinoor4k.mp4",
+    cloudflareVideoId: "96cc0ba1195720c43e010328c9cb0d75",
     thumbnail: KRAJewellers1Thumbnail,
   },
   {
     id: 10,
     label: "Festive Collection",
     category: "Daily Diamonds x Kra Jewellers",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/9to5Diamond_DirPreview_1809.mp4",
+    cloudflareVideoId: "YOUR_VIDEO_ID_10",
     thumbnail: KraDailyDiamondsThumbnail,
   },
   {
     id: 11,
     label: "Brand Film",
     category: "VIPS digital campaign Film 2",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Fortune%20Teller_Final-2.mp4",
+    cloudflareVideoId: "ec3ae84bd7b8f94d2ffe5d708d9457de",
     thumbnail: VipsFilm2Thumbnail,
   },
   {
     id: 12,
     label: "Brand Film",
     category: "VIPS digital campaign Film 1",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Saved%20by%20the%20wallet.mp4",
+    cloudflareVideoId: "9147b1b7d119463fa860703e19f84d98",
     thumbnail: VipsFilm1Thumbnail,
   },
   {
     id: 13,
     label: "Product Launch",
     category: "VIPS digital campaign Film 3",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/DIWALI%20finstock.mp4",
-    thumbnail: VipsFilm3Thumbnail, 
+    cloudflareVideoId: "96714c0c1eedc1e993e9dec030e08aaa",
+    thumbnail: VipsFilm3Thumbnail,
   },
   {
     id: 14,
     label: "Brand Campaign",
     category: "VIPS digital campaign Film 4",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Cashback%20is%20a%20habit%20VIPS%20WALLET.mp4",
+    cloudflareVideoId: "YOUR_VIDEO_ID_14",
     thumbnail: VipsFilm4Thumbnail,
   },
   {
     id: 15,
     label: "Festive Collection",
-    category: "VIPS digital campaign Film 5", //Replace this with actual name 
-     videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/ShakuniFinal.mp4",
+    category: "VIPS digital campaign Film 5",
+    cloudflareVideoId: "8a563c9fb71f30c3e67eb34d6299ea23",
     thumbnail: ShakuniFinalThumbnail,
   }
 ];
@@ -374,9 +400,14 @@ export default function WorkContent() {
   const [volume, setVolume] = useState<{ [key: number]: number }>({});
   const [isMuted, setIsMuted] = useState<{ [key: number]: boolean }>({});
   const [isFullscreen, setIsFullscreen] = useState<{ [key: number]: boolean }>({});
+  const [qualities, setQualities] = useState<{ [key: number]: Array<{ height: number; bitrate: number; name: string }> }>({});
+  const [currentQuality, setCurrentQuality] = useState<{ [key: number]: number }>({});
+  const [qualityMenuOpen, setQualityMenuOpen] = useState<{ [key: number]: boolean }>({});
   const videoRefs = useRef<Record<number, HTMLVideoElement | null>>({});
   const wrapperRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const hideControlsTimeoutRef = useRef<Record<number, NodeJS.Timeout | null>>({});
+  const hlsInstancesRef = useRef<Record<number, any>>({});
+  const hlsReadyRef = useRef<Record<number, boolean>>({});
 
   const formatTime = (seconds: number) => {
     if (!seconds || isNaN(seconds)) return "0:00";
@@ -440,6 +471,22 @@ export default function WorkContent() {
     }
   };
 
+  const handleQualityChange = (id: number, qualityIndex: number) => {
+    const hls = hlsInstancesRef.current[id];
+    if (!hls) return;
+
+    hls.currentLevel = qualityIndex;
+    setCurrentQuality((prev) => ({ ...prev, [id]: qualityIndex }));
+  };
+
+  const handleAutoQuality = (id: number) => {
+    const hls = hlsInstancesRef.current[id];
+    if (!hls) return;
+
+    hls.currentLevel = -1; // -1 = auto
+    setCurrentQuality((prev) => ({ ...prev, [id]: -1 }));
+  };
+
   const showControls = (id: number) => {
     setControlsVisible((prev) => ({ ...prev, [id]: true }));
     
@@ -465,9 +512,91 @@ export default function WorkContent() {
   useEffect(() => {
     if (playingId) {
       const videoElement = videoRefs.current[playingId];
-      if (videoElement) {
-        videoElement.play().catch((err) => console.error("Play failed:", err));
-        setIsPlaying((prev) => ({ ...prev, [playingId]: true }));
+      const workItem = workItems.find((item) => item.id === playingId);
+      
+      if (videoElement && workItem?.cloudflareVideoId) {
+        // Initialize HLS first
+        const streamUrl = getStreamUrl(workItem.cloudflareVideoId);
+        
+        // Clean up existing HLS instance if any
+        if (hlsInstancesRef.current[playingId]) {
+          hlsInstancesRef.current[playingId].destroy();
+          delete hlsInstancesRef.current[playingId];
+        }
+        hlsReadyRef.current[playingId] = false;
+        
+        // Check for native HLS support (Safari)
+        if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+          console.log('Using native HLS support');
+          videoElement.src = streamUrl;
+          hlsReadyRef.current[playingId] = true;
+          // Play immediately
+          videoElement.play().catch((err) => console.error("Play failed:", err));
+          setIsPlaying((prev) => ({ ...prev, [playingId]: true }));
+        } else if (Hls.isSupported()) {
+          console.log('Using HLS.js library');
+          // Use HLS.js for other browsers
+          const hls = new Hls({
+            enableWorker: true,
+            lowLatencyMode: false,
+            backBufferLength: 90,
+            maxBufferLength: 30,
+            maxMaxBufferLength: 600,
+          });
+          
+          hls.loadSource(streamUrl);
+          hls.attachMedia(videoElement);
+          
+          // Capture available quality levels
+          const handleManifestParsed = () => {
+            console.log('HLS Manifest parsed, total levels:', hls.levels.length);
+            if (hls.levels.length > 0) {
+              const availableQualities = hls.levels.map((level) => ({
+                height: level.height,
+                bitrate: level.bitrate,
+                name: `${level.height}p`,
+              }));
+              console.log('Available qualities:', availableQualities);
+              setQualities((prev) => ({ ...prev, [playingId]: availableQualities }));
+              setCurrentQuality((prev) => ({ ...prev, [playingId]: -1 })); // Auto
+            } else {
+              console.warn('No quality levels found in manifest');
+            }
+            hlsReadyRef.current[playingId] = true;
+            // Play after HLS is ready
+            videoElement.play().catch((err) => console.error("Play failed:", err));
+            setIsPlaying((prev) => ({ ...prev, [playingId]: true }));
+          };
+
+          hls.on(Hls.Events.MANIFEST_PARSED, handleManifestParsed);
+          
+          // Also check levels if they were already loaded
+          if (hls.levels.length > 0) {
+            handleManifestParsed();
+          }
+          
+          // Error handling
+          hls.on(Hls.Events.ERROR, (_event, data) => {
+            if (data.fatal) {
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                  console.error('HLS Network Error - attempting to recover:', data);
+                  hls.startLoad();
+                  break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  console.error('HLS Media Error - attempting to recover:', data);
+                  hls.recoverMediaError();
+                  break;
+                default:
+                  console.error('HLS Fatal Error - cannot recover:', data);
+                  hls.destroy();
+                  break;
+              }
+            }
+          });
+          
+          hlsInstancesRef.current[playingId] = hls;
+        }
         
         // Initialize volume if not set
         if (volume[playingId] === undefined) {
@@ -522,6 +651,18 @@ export default function WorkContent() {
     };
   }, []);
 
+  // Cleanup all HLS instances on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(hlsInstancesRef.current).forEach((hls) => {
+        if (hls && hls.destroy) {
+          hls.destroy();
+        }
+      });
+      hlsInstancesRef.current = {};
+    };
+  }, []);
+
   return (
     <>
       <Header />
@@ -558,7 +699,6 @@ export default function WorkContent() {
                     ref={(el) => {
                       if (el) videoRefs.current[work.id] = el;
                     }}
-                    src={work.videoSrc}
                     preload="metadata"
                     controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
                     disablePictureInPicture
@@ -601,6 +741,59 @@ export default function WorkContent() {
                         </TimeDisplay>
 
                         <Box sx={{ flex: 1 }} />
+
+                        {/* Quality Button */}
+                        {qualities[work.id] && qualities[work.id].length > 0 && (
+                          <Box sx={{ position: "relative" }}>
+                            <QualityButton
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setQualityMenuOpen((prev) => ({
+                                  ...prev,
+                                  [work.id]: !prev[work.id],
+                                }));
+                              }}
+                              aria-label="Video quality"
+                            >
+                              {currentQuality[work.id] === -1
+                                ? "AUTO"
+                                : qualities[work.id][currentQuality[work.id]]?.name || "AUTO"}
+                            </QualityButton>
+                            {qualityMenuOpen[work.id] && (
+                              <QualityMenu>
+                                <QualityOption
+                                  isActive={currentQuality[work.id] === -1}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAutoQuality(work.id);
+                                    setQualityMenuOpen((prev) => ({
+                                      ...prev,
+                                      [work.id]: false,
+                                    }));
+                                  }}
+                                >
+                                  Auto
+                                </QualityOption>
+                                {qualities[work.id].map((quality, index) => (
+                                  <QualityOption
+                                    key={index}
+                                    isActive={currentQuality[work.id] === index}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleQualityChange(work.id, index);
+                                      setQualityMenuOpen((prev) => ({
+                                        ...prev,
+                                        [work.id]: false,
+                                      }));
+                                    }}
+                                  >
+                                    {quality.name}
+                                  </QualityOption>
+                                ))}
+                              </QualityMenu>
+                            )}
+                          </Box>
+                        )}
 
                         <StyledIconButton
                           onClick={(e) => {

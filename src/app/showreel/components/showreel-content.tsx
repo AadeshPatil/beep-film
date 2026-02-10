@@ -2,6 +2,12 @@
 
 import { styled } from "@mui/material/styles";
 import { Box } from "@mui/material";
+import { useEffect, useRef } from "react";
+import { useHlsPlayer } from "@/common/hooks";
+import { getStreamUrl } from "@/common/utils";
+
+// TODO: Replace with your actual Cloudflare Stream video ID for the showreel
+const SHOWREEL_VIDEO_ID = "cc1bb892a924cbed49637a36546c232b";
 
 const StyledShowreelContainer = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
@@ -34,19 +40,21 @@ const StyledVideo = styled("video")(({ theme }) => ({
 }));
 
 export function ShowreelContent() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  // Initialize HLS for Cloudflare Stream
+  useHlsPlayer(videoRef.current, getStreamUrl(SHOWREEL_VIDEO_ID));
+  
   return (
     <StyledShowreelContainer>
       <StyledVideoContainer>
         <StyledVideo
+          ref={videoRef}
           controls
           controlsList="nodownload"
           playsInline
           preload="metadata"
         >
-          <source
-            src="https://static.kleemservices.com/beepfilms/videos/BEEP%20SHOWREEL%20HD.mp4"
-            type="video/mp4"
-          />
           Your browser does not support the video tag.
         </StyledVideo>
       </StyledVideoContainer>

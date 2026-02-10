@@ -2,7 +2,8 @@ export interface Video {
   id: number;
   title: string;
   brand: string;
-  videoUrl: string;
+  videoUrl?: string; // Legacy: Direct video URL (optional)
+  cloudflareVideoId?: string; // Cloudflare Stream video UID
   thumbnailUrl: string;
 }
 

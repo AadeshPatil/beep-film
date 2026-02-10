@@ -3,6 +3,8 @@
 import { styled } from "@mui/material/styles";
 import { Box, Typography, IconButton } from "@mui/material";
 import type { TypographyProps } from "@mui/material/Typography";
+import Hls from "hls.js";
+import { getStreamUrl } from "@/common/utils";
 import HeroCover from "@/assets/img/light/hero-cover.png";
 import PlayIcon from "@/assets/img/light/play.png";
 import LogoHeader from "@/assets/img/light/animated.gif";
@@ -472,14 +474,16 @@ const StyledBrandLogo = styled(Box)({
   }
 });
 
+// TODO: Replace these with your actual Cloudflare Stream video IDs
+const HERO_BACKGROUND_VIDEO_ID = "cc1bb892a924cbed49637a36546c232b"; // BEEP SHOWREEL HD
+
 const recentVideos = [
   {
     id: 1,
     title: "Jab Judenge tabhi toh Udenge",
     subtitle: "LINE PRODUCTION | SHRIRAM FINANCE",
     brand: "SHRIRAM",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/ZURI%20Final%20Output%20LONG%204K%20(1).mp4",
+    cloudflareVideoId: "a0426a2933d41fd2351c0a16269afd7a", // Replace with actual ID
     thumbnail: YaleZuriDvcThumbnail
   },
   {
@@ -487,8 +491,7 @@ const recentVideos = [
     title: "Creative Excellence",
     subtitle: "BRAND CAMPAIGN | CREATIVE STUDIO",
     brand: "BRAND",
-    videoSrc:
-      "https://static.kleemservices.com/beepfilms/videos/Specialdiscount.mp4",
+    cloudflareVideoId: "617906039894457634da39f8529d6e1c", // Replace with actual ID
     thumbnail: KraDiamondsDigitalThumbnail
   }
 ];
@@ -512,9 +515,12 @@ const realSlideCount = recentVideos.length;
 
 export default function Hero() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const modalVideoRef = useRef<HTMLVideoElement>(null);
+  const heroHlsRef = useRef<Hls | null>(null);
+  const modalHlsRef = useRef<Hls | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<{
     id: number;
-    videoSrc: string;
+    cloudflareVideoId: string;
   } | null>(null);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(1);
@@ -569,6 +575,92 @@ export default function Hero() {
     observer.observe(video);
     return () => observer.disconnect();
   }, []);
+
+  // HLS initialization for hero background video
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    const streamUrl = getStreamUrl(HERO_BACKGROUND_VIDEO_ID);
+
+    // Clean up existing HLS instance
+    if (heroHlsRef.current) {
+      heroHlsRef.current.destroy();
+      heroHlsRef.current = null;
+    }
+
+    // Check for native HLS support (Safari)
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = streamUrl;
+    } else if (Hls.isSupported()) {
+      const hls = new Hls({
+        enableWorker: false,
+        lowLatencyMode: false,
+      });
+
+      hls.loadSource(streamUrl);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal) {
+          console.error('Hero video HLS error:', data);
+          hls.destroy();
+        }
+      });
+
+      heroHlsRef.current = hls;
+    }
+
+    return () => {
+      if (heroHlsRef.current) {
+        heroHlsRef.current.destroy();
+        heroHlsRef.current = null;
+      }
+    };
+  }, []);
+
+  // HLS initialization for modal video
+  useEffect(() => {
+    if (!selectedVideo || !modalVideoRef.current) return;
+
+    const video = modalVideoRef.current;
+    const streamUrl = getStreamUrl(selectedVideo.cloudflareVideoId);
+
+    // Clean up existing HLS instance
+    if (modalHlsRef.current) {
+      modalHlsRef.current.destroy();
+      modalHlsRef.current = null;
+    }
+
+    // Check for native HLS support (Safari)
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = streamUrl;
+    } else if (Hls.isSupported()) {
+      const hls = new Hls({
+        enableWorker: false,
+        lowLatencyMode: false,
+      });
+
+      hls.loadSource(streamUrl);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal) {
+          console.error('Modal video HLS error:', data);
+          hls.destroy();
+        }
+      });
+
+      modalHlsRef.current = hls;
+    }
+
+    return () => {
+      if (modalHlsRef.current) {
+        modalHlsRef.current.destroy();
+        modalHlsRef.current = null;
+      }
+    };
+  }, [selectedVideo]);
 
   useEffect(() => {
     if (!transitionEnabled) return;
@@ -688,10 +780,7 @@ export default function Hero() {
           playsInline
           poster={HeroCover.src}
         >
-          <source
-            src="https://static.kleemservices.com/beepfilms/videos/BEEP%20SHOWREEL%20HD.mp4"
-            type="video/mp4"
-          />
+          {/* HLS source will be set programmatically */}
         </StyledVideoBackground>
 
         <StyledVideoOverlay />
@@ -756,7 +845,7 @@ export default function Hero() {
                       if (isSwipingRef.current) return;
                       setSelectedVideo({
                         id: video.id,
-                        videoSrc: video.videoSrc
+                        cloudflareVideoId: video.cloudflareVideoId
                       });
                     }}
                     sx={{
@@ -813,11 +902,13 @@ export default function Hero() {
             </StyledCloseButton>
             <StyledModalContent onClick={(e) => e.stopPropagation()}>
               <StyledVideoBackground
+                ref={modalVideoRef}
                 controls
                 autoPlay
                 playsInline
-                src={selectedVideo.videoSrc}
-              />
+              >
+                {/* HLS source will be set programmatically */}
+              </StyledVideoBackground>
             </StyledModalContent>
           </>
         )}
