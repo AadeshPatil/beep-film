@@ -11,7 +11,7 @@ const SHOWREEL_VIDEO_ID = "cc1bb892a924cbed49637a36546c232b";
 
 const StyledShowreelContainer = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
-  paddingTop: "90px",
+  paddingTop: "0",
   paddingBottom: "2rem",
   backgroundColor: "#000",
   [theme.breakpoints.down("sm")]: {
