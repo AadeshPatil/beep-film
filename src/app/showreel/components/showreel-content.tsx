@@ -3,7 +3,7 @@
 import { styled } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import { useEffect, useRef } from "react";
-import { useHlsPlayer } from "@/common/hooks";
+import Hls from "hls.js";
 import { getStreamUrl } from "@/common/utils";
 
 // TODO: Replace with your actual Cloudflare Stream video ID for the showreel
@@ -41,10 +41,74 @@ const StyledVideo = styled("video")(({ theme }) => ({
 
 export function ShowreelContent() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+  const hlsRef = useRef<Hls | null>(null);
+
   // Initialize HLS for Cloudflare Stream
-  useHlsPlayer(videoRef.current, getStreamUrl(SHOWREEL_VIDEO_ID));
-  
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const streamUrl = getStreamUrl(SHOWREEL_VIDEO_ID);
+
+    // Clean up existing HLS instance
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
+
+    // Check for native HLS support (Safari, iOS)
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = streamUrl;
+    } else if (Hls.isSupported()) {
+      // Use HLS.js for browsers without native HLS support
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: false,
+        backBufferLength: 90,
+        maxBufferLength: 30,
+        maxMaxBufferLength: 600,
+      });
+
+      hlsRef.current = hls;
+
+      // Load the stream and attach to video element
+      hls.loadSource(streamUrl);
+      hls.attachMedia(video);
+
+      // Error handling
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal) {
+          switch (data.type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              console.error("Showreel HLS Network Error - attempting to recover:", data);
+              hls.startLoad();
+              break;
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              console.error("Showreel HLS Media Error - attempting to recover:", data);
+              hls.recoverMediaError();
+              break;
+            default:
+              console.error("Showreel HLS Fatal Error - cannot recover:", data);
+              hls.destroy();
+              break;
+          }
+        } else {
+          console.warn("Showreel HLS Non-fatal Error:", data);
+        }
+      });
+    } else {
+      console.error("HLS is not supported in this browser");
+    }
+
+    // Cleanup function
+    return () => {
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+        hlsRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <StyledShowreelContainer>
       <StyledVideoContainer>

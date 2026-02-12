@@ -351,7 +351,7 @@ const workItems = [
     id: 10,
     label: "Festive Collection",
     category: "Daily Diamonds x Kra Jewellers",
-    cloudflareVideoId: "YOUR_VIDEO_ID_10",
+    cloudflareVideoId: "4e26d61540bb3b9fcd981105f63c6a71",
     thumbnail: KraDailyDiamondsThumbnail,
   },
   {
@@ -379,7 +379,7 @@ const workItems = [
     id: 14,
     label: "Brand Campaign",
     category: "VIPS digital campaign Film 4",
-    cloudflareVideoId: "YOUR_VIDEO_ID_14",
+    cloudflareVideoId: "824431244fe4e55085e698c987d4725f",
     thumbnail: VipsFilm4Thumbnail,
   },
   {
