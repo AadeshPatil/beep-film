@@ -545,13 +545,69 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [isVideoPlaying]);
 
-  // Auto-unmute after 0.3s delay for audio autoplay
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsMuted(false);
-    }, 300);
+    const video = heroVideoRef.current;
+    if (!video) return;
+    video.muted = isMuted;
+    video.defaultMuted = isMuted;
+  }, [isMuted]);
 
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    if (!isMuted) return;
+    const handleFirstInteraction = () => {
+      const video = heroVideoRef.current;
+      if (!video) return;
+      video.muted = false;
+      video.defaultMuted = false;
+      setIsMuted(false);
+    };
+
+    const options = { once: true, passive: true } as const;
+    window.addEventListener("pointerdown", handleFirstInteraction, options);
+    window.addEventListener("touchstart", handleFirstInteraction, options);
+    window.addEventListener("keydown", handleFirstInteraction, options);
+    window.addEventListener("click", handleFirstInteraction, options);
+    return () => {
+      window.removeEventListener("pointerdown", handleFirstInteraction);
+      window.removeEventListener("touchstart", handleFirstInteraction);
+      window.removeEventListener("keydown", handleFirstInteraction);
+      window.removeEventListener("click", handleFirstInteraction);
+    };
+  }, [isMuted]);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    const attemptUnmute = () => {
+      if (!isMuted) return;
+      if (typeof navigator !== "undefined" &&
+        "userActivation" in navigator &&
+        !navigator.userActivation.hasBeenActive) {
+        return;
+      }
+
+      video.muted = false;
+      video.defaultMuted = false;
+      setIsMuted(false);
+    };
+
+    video.addEventListener("play", attemptUnmute);
+    return () => video.removeEventListener("play", attemptUnmute);
+  }, [isMuted]);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    const handleCanPlay = () => {
+      video.play().catch(() => {
+        // Autoplay might be blocked, that's okay
+      });
+    };
+
+    video.addEventListener("canplay", handleCanPlay);
+    return () => video.removeEventListener("canplay", handleCanPlay);
   }, []);
 
   // Intersection Observer for pause/play based on visibility
@@ -778,6 +834,7 @@ export default function Hero() {
           muted={isMuted}
           loop
           playsInline
+          preload="auto"
           poster={HeroCover.src}
         >
           {/* HLS source will be set programmatically */}
