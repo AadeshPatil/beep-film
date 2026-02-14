@@ -540,7 +540,8 @@ export default function Hero() {
 
   const [isMuted, setIsMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const hasUserInteractedRef = useRef(false);
+  const isManualMuteRef = useRef(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -560,29 +561,92 @@ export default function Hero() {
     video.defaultMuted = isMuted;
   }, [isMuted]);
 
-  useEffect(() => {
-    if (hasUserInteracted) return;
+  const handleMuteToggle = async () => {
+    const video = heroVideoRef.current;
+    if (!video) return;
     
-    const handleFirstInteraction = () => {
-      setHasUserInteracted(true);
-      const video = heroVideoRef.current;
-      if (!video) return;
-      video.muted = false;
-      video.defaultMuted = false;
-      setIsMuted(false);
+    // Mark that user has manually controlled mute state
+    hasUserInteractedRef.current = true;
+    isManualMuteRef.current = true;
+    
+    const newMutedState = !isMuted;
+    const wasPlaying = !video.paused;
+    
+    // Change muted state
+    video.muted = newMutedState;
+    video.defaultMuted = newMutedState;
+    setIsMuted(newMutedState);
+    
+    // If unmuting and video was playing, ensure it continues playing
+    if (!newMutedState && wasPlaying) {
+      try {
+        await video.play();
+      } catch (error) {
+        // Play failed, revert to muted if needed
+        console.log('Play failed after unmute:', error);
+      }
+    }
+  };
+
+  // Auto-unmute on first user interaction (except mute button clicks)
+  // Disabled on Chrome due to playback issues, user must use mute button
+  useEffect(() => {
+    // Detect Chrome browser (not Brave, Edge, or other Chromium-based browsers)
+    const isChrome = () => {
+      const ua = navigator.userAgent;
+      const hasChrome = ua.includes('Chrome');
+      const notEdge = !ua.includes('Edg');
+      const notBrave = !(navigator as any).brave;
+      return hasChrome && notEdge && notBrave;
     };
 
-    const options = { once: true, passive: true } as const;
-    window.addEventListener("pointerdown", handleFirstInteraction, options);
-    window.addEventListener("touchstart", handleFirstInteraction, options);
-    window.addEventListener("keydown", handleFirstInteraction, options);
+    // Skip auto-unmute on Chrome
+    if (isChrome()) {
+      return;
+    }
+
+    const handleFirstInteraction = async (e: Event) => {
+      if (hasUserInteractedRef.current) return;
+      
+      // Don't auto-unmute if user is clicking the mute button
+      const target = e.target as HTMLElement;
+      if (target.closest('button[aria-label*="Mute"]') || target.closest('button[aria-label*="Unmute"]')) {
+        return;
+      }
+      
+      hasUserInteractedRef.current = true;
+      
+      // Only auto-unmute if user hasn't manually set mute state
+      if (!isManualMuteRef.current) {
+        const video = heroVideoRef.current;
+        if (!video) return;
+        
+        const wasPlaying = !video.paused;
+        video.muted = false;
+        video.defaultMuted = false;
+        setIsMuted(false);
+        
+        // Resume playback if video was playing
+        if (wasPlaying) {
+          try {
+            await video.play();
+          } catch (error) {
+            console.log('Auto-unmute play failed:', error);
+          }
+        }
+      }
+    };
+
+    window.addEventListener("pointerdown", handleFirstInteraction, { passive: true });
+    window.addEventListener("touchstart", handleFirstInteraction, { passive: true });
+    window.addEventListener("keydown", handleFirstInteraction, { passive: true });
     
     return () => {
       window.removeEventListener("pointerdown", handleFirstInteraction);
       window.removeEventListener("touchstart", handleFirstInteraction);
       window.removeEventListener("keydown", handleFirstInteraction);
     };
-  }, [hasUserInteracted]);
+  }, []);
 
   useEffect(() => {
     const video = heroVideoRef.current;
@@ -832,7 +896,7 @@ export default function Hero() {
 
         {/* Mute Toggle Button */}
         <StyledNavButton
-          onClick={() => setIsMuted(!isMuted)}
+          onClick={handleMuteToggle}
           sx={{
             position: "absolute",
             bottom: "2rem",
