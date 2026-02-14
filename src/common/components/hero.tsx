@@ -49,23 +49,30 @@ const StyledHeroSection = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "stretch",
   padding: "0 1.25rem",
+  [theme.breakpoints.down("md")]: {
+    minHeight: "60vh"
+  },
   [theme.breakpoints.down("sm")]: {
-    minHeight: "70vh"
+    minHeight: "50vh"
   },
   [theme.breakpoints.up("md")]: {
     padding: "0 3rem"
+  },
+  [theme.breakpoints.up("xl")]: {
+    minHeight: "90vh"
   }
 }));
 
-const StyledVideoBackground = styled("video")({
+const StyledVideoBackground = styled("video")(({ theme }) => ({
   position: "absolute",
   inset: 0,
   width: "100%",
   height: "100%",
   objectFit: "cover",
+  objectPosition: "center center",
   display: "block",
   backgroundColor: "#000"
-});
+}));
 
 const StyledVideoOverlay = styled(Box)({
   position: "absolute",
@@ -533,6 +540,7 @@ export default function Hero() {
 
   const [isMuted, setIsMuted] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -553,8 +561,10 @@ export default function Hero() {
   }, [isMuted]);
 
   useEffect(() => {
-    if (!isMuted) return;
+    if (hasUserInteracted) return;
+    
     const handleFirstInteraction = () => {
+      setHasUserInteracted(true);
       const video = heroVideoRef.current;
       if (!video) return;
       video.muted = false;
@@ -566,35 +576,13 @@ export default function Hero() {
     window.addEventListener("pointerdown", handleFirstInteraction, options);
     window.addEventListener("touchstart", handleFirstInteraction, options);
     window.addEventListener("keydown", handleFirstInteraction, options);
-    window.addEventListener("click", handleFirstInteraction, options);
+    
     return () => {
       window.removeEventListener("pointerdown", handleFirstInteraction);
       window.removeEventListener("touchstart", handleFirstInteraction);
       window.removeEventListener("keydown", handleFirstInteraction);
-      window.removeEventListener("click", handleFirstInteraction);
     };
-  }, [isMuted]);
-
-  useEffect(() => {
-    const video = heroVideoRef.current;
-    if (!video) return;
-
-    const attemptUnmute = () => {
-      if (!isMuted) return;
-      if (typeof navigator !== "undefined" &&
-        "userActivation" in navigator &&
-        !navigator.userActivation.hasBeenActive) {
-        return;
-      }
-
-      video.muted = false;
-      video.defaultMuted = false;
-      setIsMuted(false);
-    };
-
-    video.addEventListener("play", attemptUnmute);
-    return () => video.removeEventListener("play", attemptUnmute);
-  }, [isMuted]);
+  }, [hasUserInteracted]);
 
   useEffect(() => {
     const video = heroVideoRef.current;

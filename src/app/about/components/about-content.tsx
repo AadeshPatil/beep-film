@@ -183,15 +183,7 @@ const StyledTeamGrid = styled(Box)(({ theme }) => ({
   gridTemplateColumns: "repeat(3, 1fr)",
   gap: "4rem",
   position: "relative",
-  "& > *:not(:last-child)::after": {
-    content: '""',
-    position: "absolute",
-    right: "-2rem",
-    top: "0",
-    width: "0.1px",
-    height: "100%",
-    backgroundColor: "#FDFF6D",
-  },
+ 
   [theme.breakpoints.down("md")]: {
     gridTemplateColumns: "repeat(2, 1fr)",
   },
