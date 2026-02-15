@@ -26,6 +26,8 @@ import VipsFilm2Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Fi
 import VipsFilm3Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_3.webp";
 import VipsFilm4Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_4.webp";
 import YaleZuriDvcThumbnail from "@/assets/img/thumbnails/Yale_Zuri-DVC.webp";
+import Image from "next/image";
+import PlayIcon from "@/assets/img/light/play.png";
 
 const StyledWorkSection = styled(Box)(({ theme }) => ({
   backgroundColor: "#000",
@@ -395,6 +397,7 @@ export default function WorkContent() {
   const [playingId, setPlayingId] = useState<number | null>(null);
   const [controlsVisible, setControlsVisible] = useState<{ [key: number]: boolean }>({});
   const [isPlaying, setIsPlaying] = useState<{ [key: number]: boolean }>({});
+  const [isReady, setIsReady] = useState<{ [key: number]: boolean }>({});
   const [currentTime, setCurrentTime] = useState<{ [key: number]: number }>({});
   const [duration, setDuration] = useState<{ [key: number]: number }>({});
   const [volume, setVolume] = useState<{ [key: number]: number }>({});
@@ -501,10 +504,45 @@ export default function WorkContent() {
     }
   };
 
+  const stopOtherVideos = (id: number) => {
+    Object.entries(videoRefs.current).forEach(([idStr, video]) => {
+      const videoId = parseInt(idStr, 10);
+      if (video && videoId !== id) {
+        video.pause();
+      }
+    });
+    setIsPlaying((prev) => {
+      const next = { ...prev };
+      Object.keys(next).forEach((key) => {
+        const videoId = parseInt(key, 10);
+        if (videoId !== id) next[videoId] = false;
+      });
+      return next;
+    });
+    setControlsVisible((prev) => {
+      const next = { ...prev };
+      Object.keys(next).forEach((key) => {
+        const videoId = parseInt(key, 10);
+        if (videoId !== id) next[videoId] = false;
+      });
+      return next;
+    });
+    setIsReady((prev) => {
+      const next = { ...prev };
+      Object.keys(next).forEach((key) => {
+        const videoId = parseInt(key, 10);
+        if (videoId !== id) next[videoId] = false;
+      });
+      return next;
+    });
+  };
+
   const handleVideoClick = (id: number) => {
     if (playingId === id) {
       handlePlayPause(id);
     } else {
+      stopOtherVideos(id);
+      setIsReady((prev) => ({ ...prev, [id]: false }));
       setPlayingId(id);
     }
   };
@@ -515,6 +553,8 @@ export default function WorkContent() {
       const workItem = workItems.find((item) => item.id === playingId);
       
       if (videoElement && workItem?.cloudflareVideoId) {
+        stopOtherVideos(playingId);
+        setIsReady((prev) => ({ ...prev, [playingId]: false }));
         // Initialize HLS first
         const streamUrl = getStreamUrl(workItem.cloudflareVideoId);
         
@@ -530,9 +570,15 @@ export default function WorkContent() {
           console.log('Using native HLS support');
           videoElement.src = streamUrl;
           hlsReadyRef.current[playingId] = true;
-          // Play immediately
-          videoElement.play().catch((err) => console.error("Play failed:", err));
-          setIsPlaying((prev) => ({ ...prev, [playingId]: true }));
+          videoElement.addEventListener(
+            "canplay",
+            () => {
+              setIsReady((prev) => ({ ...prev, [playingId]: true }));
+              videoElement.play().catch((err) => console.error("Play failed:", err));
+              setIsPlaying((prev) => ({ ...prev, [playingId]: true }));
+            },
+            { once: true }
+          );
         } else if (Hls.isSupported()) {
           console.log('Using HLS.js library');
           // Use HLS.js for other browsers
@@ -563,6 +609,7 @@ export default function WorkContent() {
               console.warn('No quality levels found in manifest');
             }
             hlsReadyRef.current[playingId] = true;
+            setIsReady((prev) => ({ ...prev, [playingId]: true }));
             // Play after HLS is ready
             videoElement.play().catch((err) => console.error("Play failed:", err));
             setIsPlaying((prev) => ({ ...prev, [playingId]: true }));
@@ -625,6 +672,15 @@ export default function WorkContent() {
       setDuration((prev) => ({ ...prev, [id]: video.duration }));
     };
 
+    const handlePlaying = (id: number) => () => {
+      setIsReady((prev) => ({ ...prev, [id]: true }));
+      setIsPlaying((prev) => ({ ...prev, [id]: true }));
+    };
+
+    const handleWaiting = (id: number) => () => {
+      setIsReady((prev) => ({ ...prev, [id]: false }));
+    };
+
     const handleEnded = (id: number) => () => {
       setPlayingId(null);
       setIsPlaying((prev) => ({ ...prev, [id]: false }));
@@ -635,6 +691,8 @@ export default function WorkContent() {
       if (video) {
         video.addEventListener("timeupdate", handleTimeUpdate(id));
         video.addEventListener("loadedmetadata", handleLoadedMetadata(id));
+        video.addEventListener("playing", handlePlaying(id));
+        video.addEventListener("waiting", handleWaiting(id));
         video.addEventListener("ended", handleEnded(id));
       }
     });
@@ -645,6 +703,8 @@ export default function WorkContent() {
         if (video) {
           video.removeEventListener("timeupdate", handleTimeUpdate(id));
           video.removeEventListener("loadedmetadata", handleLoadedMetadata(id));
+          video.removeEventListener("playing", handlePlaying(id));
+          video.removeEventListener("waiting", handleWaiting(id));
           video.removeEventListener("ended", handleEnded(id));
         }
       });
@@ -691,7 +751,7 @@ export default function WorkContent() {
                     src={work.thumbnail.src}
                     alt={work.label}
                     style={{
-                      opacity: playingId === work.id ? 0 : 1,
+                      opacity: playingId === work.id && isReady[work.id] ? 0 : 1,
                       transition: "opacity 0.3s ease",
                     }}
                   />
@@ -704,17 +764,21 @@ export default function WorkContent() {
                     disablePictureInPicture
                     onClick={() => handleVideoClick(work.id)}
                     style={{
-                      opacity: playingId === work.id ? 1 : 0,
-                      pointerEvents: playingId === work.id ? "auto" : "none",
+                      opacity: playingId === work.id && isReady[work.id] ? 1 : 0,
+                      pointerEvents: playingId === work.id && isReady[work.id] ? "auto" : "none",
                       transition: "opacity 0.3s ease",
                       cursor: playingId === work.id ? "pointer" : "default",
                     }}
                   />
                   {playingId !== work.id && (
                     <PlayButtonOverlay onClick={() => setPlayingId(work.id)}>
-                      <PlayButton>
-                        <svg width="50px" height="50px" viewBox="-7.44 -7.44 38.88 38.88" xmlns="http://www.w3.org/2000/svg" fill="#000000" transform="rotate(0)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="1.248"></g><g id="SVGRepo_iconCarrier"> <path fill="none" stroke="#000000" stroke-width="2.4" d="M3,22.0000002 L21,12 L3,2 L3,22.0000002 Z M5,19 L17.5999998,11.9999999 L5,5 L5,19 Z M7,16 L14.1999999,12 L7,8 L7,16 Z M9,13 L10.8,12 L9,11 L9,13 Z"></path> </g></svg>
-                      </PlayButton>
+
+                        <Image
+                          src={PlayIcon.src}
+                          alt="Play video"
+                          width={70}
+                          height={70}
+                        />
                     </PlayButtonOverlay>
                   )}
                   {playingId === work.id && (
