@@ -11,26 +11,39 @@ const SHOWREEL_VIDEO_ID = "cc1bb892a924cbed49637a36546c232b";
 
 const StyledShowreelContainer = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
-  paddingTop: "0",
-  paddingBottom: "2rem",
+  height: "100vh",
+  padding: "0",
   backgroundColor: "#000",
+  display: "flex",
+  alignItems: "center",
+  overflow: "hidden",
   [theme.breakpoints.down("sm")]: {
-    paddingTop: "80px",
+    height: "100vh",
+    padding: "0 1rem",
   },
 }));
 
 const StyledVideoContainer = styled(Box)(({ theme }) => ({
+  width: "100%",
   maxWidth: "1400px",
+  height: "100%",
   margin: "0 auto",
-  padding: "3rem 2rem",
+  padding: "0 2rem",
+  display: "flex",
+  alignItems: "center",
+  [theme.breakpoints.between("md", "lg")]: {
+    padding: "0 20vw",
+  },
   [theme.breakpoints.down("sm")]: {
-    padding: "1.5rem",
+    padding: "0",
   },
 }));
 
 const StyledVideo = styled("video")(({ theme }) => ({
   width: "100%",
   height: "auto",
+  maxHeight: "100%",
+  objectFit: "contain",
   display: "block",
   backgroundColor: "#000",
   borderRadius: "4px",
