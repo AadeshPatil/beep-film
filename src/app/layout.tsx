@@ -12,6 +12,9 @@ const koulen = Koulen({
 export const metadata: Metadata = {
   title: "Beep Films",
   description: "Premium video production and creative content portfolio",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
