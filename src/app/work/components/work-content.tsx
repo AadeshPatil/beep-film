@@ -21,6 +21,10 @@ import KraDailyDiamondsThumbnail from "@/assets/img/thumbnails/Kra Jewellers-Dai
 import KraDiamondsDigitalThumbnail from "@/assets/img/thumbnails/Kra_jewellers-Diamonds_Digital_campaign.webp";
 import SebamedDigitalAdThumbnail from "@/assets/img/thumbnails/Sebamed-digital_ad.webp";
 import ShakuniFinalThumbnail from "@/assets/img/thumbnails/Shakuni_final.webp";
+import OldGoldExchange1Thumbnail from "@/assets/img/thumbnails/old-gold-exchange-1.png";
+import OldGoldExchange2Thumbnail from "@/assets/img/thumbnails/old-gold-exchange-2.png";
+import OldGoldExchange3Thumbnail from "@/assets/img/thumbnails/old-gold-exchange-3.png";
+import OldGoldExchange4Thumbnail from "@/assets/img/thumbnails/old-gold-exchange-4.png";
 import VipsFilm1Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_1.webp";
 import VipsFilm2Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_2.webp";
 import VipsFilm3Thumbnail from "@/assets/img/thumbnails/VIPS_digital_campaign_Film_3.webp";
@@ -390,6 +394,34 @@ const workItems = [
     category: "VIPS digital campaign Film 5",
     cloudflareVideoId: "8a563c9fb71f30c3e67eb34d6299ea23",
     thumbnail: ShakuniFinalThumbnail,
+  },
+  {
+    id: 16,
+    label: "Old gold exchange - 1",
+    category: "Old Gold exchange for Diamonds",
+    cloudflareVideoId: "116c1fa929493961b2b418c4abc833b6",
+    thumbnail: OldGoldExchange1Thumbnail,
+  },
+  {
+    id: 17,
+    label: "Old gold exchange - 2",
+    category: "Old gold exchange for new designs",
+    cloudflareVideoId: "ed85b747151bb3d28f755b776cb5b14d",
+    thumbnail: OldGoldExchange2Thumbnail,
+  },
+  {
+    id: 18,
+    label: "Old gold exchange - 3",
+    category: "Old Gold exchange for Bridal jewellery",
+    cloudflareVideoId: "10eb8c3aac44b1c6fda3476c6df448df",
+    thumbnail: OldGoldExchange3Thumbnail,
+  },
+  {
+    id: 19,
+    label: "Old gold exchange - 4",
+    category: "Old gold exchange x Valentine's Day",
+    cloudflareVideoId: "28285e6d9f6e8878e9fb237fbfe72ba2",
+    thumbnail: OldGoldExchange4Thumbnail,
   }
 ];
 
