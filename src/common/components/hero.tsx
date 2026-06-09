@@ -18,13 +18,15 @@ import Logo7 from "@/assets/img/company-logos/yale.png";
 import YaleZuriDvcThumbnail from "@/assets/img/thumbnails/Yale_Zuri-DVC.webp";
 import KraDiamondsDigitalThumbnail from "@/assets/img/thumbnails/Kra_jewellers-Diamonds_Digital_campaign.webp";
 import { useState, useEffect, useRef } from "react";
-import type { TouchEvent, PointerEvent } from "react";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import CloseIcon from "@mui/icons-material/Close";
 import Image from "next/image";
+
+import OldGoldExchange1Thumbnail from "@/assets/img/thumbnails/old-gold-exchange-1.png";
+import OldGoldExchange2Thumbnail from "@/assets/img/thumbnails/old-gold-exchange-2.png";
+import OldGoldExchange3Thumbnail from "@/assets/img/thumbnails/old-gold-exchange-3.png";
+import OldGoldExchange4Thumbnail from "@/assets/img/thumbnails/old-gold-exchange-4.png";
 const PlayButtonOverlay = styled(Box)({
   position: "absolute",
   top: 0,
@@ -500,6 +502,34 @@ const recentVideos = [
     brand: "BRAND",
     cloudflareVideoId: "617906039894457634da39f8529d6e1c", // Replace with actual ID
     thumbnail: KraDiamondsDigitalThumbnail
+  },
+  {
+    id: 16,
+    label: "Old gold exchange - 1",
+    category: "Old Gold exchange for Diamonds",
+    cloudflareVideoId: "116c1fa929493961b2b418c4abc833b6",
+    thumbnail: OldGoldExchange1Thumbnail,
+  },
+  {
+    id: 17,
+    label: "Old gold exchange - 2",
+    category: "Old gold exchange for new designs",
+    cloudflareVideoId: "ed85b747151bb3d28f755b776cb5b14d",
+    thumbnail: OldGoldExchange2Thumbnail,
+  },
+  {
+    id: 18,
+    label: "Old gold exchange - 3",
+    category: "Old Gold exchange for Bridal jewellery",
+    cloudflareVideoId: "10eb8c3aac44b1c6fda3476c6df448df",
+    thumbnail: OldGoldExchange3Thumbnail,
+  },
+  {
+    id: 19,
+    label: "Old gold exchange - 4",
+    category: "Old gold exchange x Valentine's Day",
+    cloudflareVideoId: "28285e6d9f6e8878e9fb237fbfe72ba2",
+    thumbnail: OldGoldExchange4Thumbnail,
   }
 ];
 
